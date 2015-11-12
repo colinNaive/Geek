@@ -1,0 +1,167 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_star"
+    tools:context=".Weather" >
+
+    <RelativeLayout
+        android:id="@+id/frameLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="#55636363"
+        android:gravity="fill"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/trend"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/def_selector"
+            android:src="@drawable/trend" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/trend"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/localcity"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:drawableLeft="@drawable/location"
+            android:gravity="center"
+            android:text="未知"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/frameLayout1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/afterfive_layout"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="50dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical" >
+
+            <include
+                android:id="@+id/zb01"
+                layout="@layout/item_weather" />
+
+            <include
+                android:id="@+id/zb02"
+                layout="@layout/item_weather" />
+
+            <include
+                android:id="@+id/zb03"
+                layout="@layout/item_weather" />
+
+            <include
+                android:id="@+id/zb04"
+                layout="@layout/item_weather" />
+            
+            <include
+                android:id="@+id/zb05"
+                layout="@layout/item_weather" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/refresh"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/title_update" />
+
+        <LinearLayout
+            android:id="@+id/relativeLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <org.zhongwen.weather.widget.RobotoTextView
+                    android:id="@+id/wendu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:shadowColor="@color/white"
+                    android:shadowRadius="14"
+                    android:text="@string/def_wendu_l"
+                    android:textColor="@color/holo_blue_light"
+                    android:textSize="80sp" />
+
+                <TextView
+                    android:id="@+id/weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="bottom"
+                    android:text="晴"
+                    android:textColor="@color/holo_blue_light"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/shiline"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+            <TextView
+                android:id="@+id/high_low"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comfortable"
+                android:textColor="@color/holo_blue_light"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/wind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="微风"
+                android:textColor="@color/holo_blue_light" />
+
+            <TextView
+                android:id="@+id/refreshDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1月1日 星期一"
+                android:textColor="@color/holo_blue_light" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/refreshTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/afterfive_layout"
+            android:layout_alignLeft="@+id/relativeLayout1"
+            android:text="00:00更新"
+            android:textColor="@color/holo_blue_light" />
+    </RelativeLayout>
+
+</RelativeLayout>

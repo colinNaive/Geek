@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/left_normal"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/addresList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/version_btn"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tocitylist" >
+    </ListView>
+
+    <TextView
+        android:id="@+id/tocitylist"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:background="@drawable/tool_box_fragment_bg_normal"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="@string/address"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:drawableLeft="@drawable/ic_launcher"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/version_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@color/holo_red_light"
+        android:gravity="center"
+        android:text="最懂天气"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</RelativeLayout>

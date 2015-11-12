@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="btn_pass">#f4a32e</color>
+    <color name="transparent">#00000000</color>
+    <color name="white">#FFFFFFFF</color>
+       <color name="left_normal">#333332</color>
+    <!-- 白色 -->
+    <color name="black">#000000</color>
+    <!-- 黑色 -->
+    <color name="efef">#efefef</color>
+    <!-- 黑色按钮 -->
+    <color name="blackbtn_n">#212421</color>
+    <color name="blackbtn_p">#444644</color>
+    <!-- 红色 -->
+    <color name="xiaoxie_n">#e84c3d</color>
+    <color name="deep_gray">#ff555555</color>
+    <color name="light_gray">#ff757575</color>
+    <color name="item_click_top">#fff29202</color>
+    <color name="item_click_bottom">#ffe69306</color>
+    <color name="viewpager">#941821</color>
+    <color name="btn_p">#f1c40f</color>
+    <color name="redian_n">#1bbc9b</color>
+    <color name="home_color3">#1fbba6</color>
+    <color name="title_bg">#0477bf</color>
+    <!-- 列表item字体  深蓝色 -->
+    <color name="shenlan">#2d3e50</color>
+    <color name="theme2_title_bg">#0477bf</color>
+    <color name="theme2_white">#f2f2f2</color>
+<!-- A light Holo shade of blue -->
+    <color name="holo_blue_light">#ff33b5e5</color>
+    <!-- A light Holo shade of green -->
+    <color name="holo_green_light">#ff99cc00</color>
+    <!-- A light Holo shade of red -->
+    <color name="holo_red_light">#ffff4444</color>
+    <!-- A dark Holo shade of blue -->
+    <color name="holo_blue_dark">#ff0099cc</color>
+    <!-- A dark Holo shade of green -->
+    <color name="holo_green_dark">#ff669900</color>
+    <!-- A dark Holo shade of red -->
+    <color name="holo_red_dark">#ffcc0000</color>
+    <!-- A Holo shade of purple -->
+    <color name="holo_purple">#ffaa66cc</color>
+    <!-- A light Holo shade of orange -->
+    <color name="holo_orange_light">#ffffbb33</color>
+    <!-- A dark Holo shade of orange -->
+    <color name="holo_orange_dark">#ffff8800</color>
+    <!-- A really bright Holo shade of blue -->
+    <color name="holo_blue_bright">#ff00ddff</color>
+</resources>

@@ -1,0 +1,249 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_star"
+    tools:context=".TrendWeek" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#55000000" >
+
+        <RelativeLayout
+            android:id="@+id/frameLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:background="#55636363"
+            android:gravity="fill"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/home"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/def_selector"
+                android:src="@drawable/title_city" />
+
+            <ImageView
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/def_selector"
+                android:src="@drawable/title_update"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/refresh"
+                android:background="@color/white" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/home"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/title_trend"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/day_weather"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/frameLayout1"
+            android:gravity="center"
+            android:orientation="horizontal" >
+            
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_top"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_top"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_top"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_top"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <org.zhongwen.weather.widget.TrendView
+            android:id="@+id/trendView"
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/day_weather"
+            android:background="#55000000" />
+
+        <LinearLayout
+            android:id="@+id/night_weather"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="#55636363"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/redian_n"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_bottom"
+                android:textColor="@color/white" />
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/redian_n"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_bottom"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/redian_n"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_bottom"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/redian_n"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trend_shuxian_bottom"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/redian_n"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cloth_women"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/trendView"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="23dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/cloth_women" />
+
+        <ImageView
+            android:id="@+id/cloth_man"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/cloth_women"
+            android:layout_marginRight="24dp"
+            android:layout_toLeftOf="@+id/cloth_women"
+            android:src="@drawable/cloth_man" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/cloth_man"
+            android:layout_marginBottom="33dp"
+            android:layout_toLeftOf="@+id/cloth_women"
+            android:text="今天穿什么" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
