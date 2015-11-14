@@ -1,0 +1,143 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+html,body{
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+.total{
+	width: 100%;
+	height: 100%;
+	max-width: 768px;
+	margin: auto;
+	background: #efefef;
+	position: relative;
+}
+
+/*title*/
+.title{
+	width: 100%;
+}
+
+/*彩灯的canvas*/
+.canvas-div{
+	width: 64%;
+	margin:3% auto 5%;
+	/*background-color: #c00;*/
+}
+
+/*亮度调节滚动条*/
+.bright-div{
+	width: 84%;
+	height: 20px;
+	margin:0 auto 6%;
+	position: relative;
+	/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
+	background:url("../img/alpha_light.png") 0px center no-repeat, url("../img/alpha_deep.png") 100% center no-repeat;
+	background-size: 10%;
+}
+.slide-bar{
+	width: 70%;
+	height: 8px;
+	margin:0 auto;
+	background-color: #fff;
+	position: relative;
+	top: 6px;
+	border-radius: 5px;
+}
+.slide-btn{
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: #0accd5;
+	top: 0;
+	left:100%;
+	margin-top: -5px;
+	margin-left: -10px;
+	position: absolute;
+}
+.slide-progress{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: #0accd5;
+	border-radius: 5px;
+}
+
+/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
+/*颜色选择块*/
+.color-picker{
+	width: 74%;
+	margin: auto;
+	text-align: center;
+}
+.color-picker li{
+	display: inline-block;
+	width:8%;
+	height:30px;
+	margin-right: 4px;
+	background-color: #c00;
+}
+.color-picker li.red{background-color: #c00;}
+.color-picker li.green{background-color: #00ff00;}
+.color-picker li.pure{background-color: #0000fd;}
+.color-picker li.yellow{background-color: #feff00;}
+.color-picker li.pink{background-color: #fe00fe;}
+.color-picker li.white{background-color: #ffffff;}
+.color-picker li.blue{background-color: #00fffc;}
+
+li{list-style: none;}
+img{
+	vertical-align: middle;
+}
+/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
+a{text-decoration: none;}
+a:active{background-color: #ddd;}
+/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
+.bottom{*zoom: 1;}
+.bottom:after{
+	content: '';
+	display: block;
+	width: 0;
+	height: 0;
+	clear: both;
+}
+
+
+/*底部菜单*/
+/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
+footer{
+	width: 100%;
+	margin: auto;
+	max-width: 768px;
+	text-align: center;
+	position: absolute;
+	bottom:0;
+	left: 0;
+	right: 0;
+	z-index: 999;
+}
+footer a{
+	display: block;
+	float: left;
+	width: 20%;
+}
+footer a img{
+	width: 100%;
+}
+
+/*手机响应式布局*/
+@media screen and (min-width: 960px) {
+	.total{
+		width: 320px;
+		height: 568px;
+		margin-top:30px;
+	}
+	footer{
+		width: 320px;
+	}
+}
