@@ -24,27 +24,32 @@ function connectWebsocket() {
 			}
 			//读取状态节点
 			if(output_text.indexOf("+CLNODE:#1,")!=-1){
-				console.log("result_test="+output_text);
 				//有效信息起点
 				var s=output_text.indexOf("+CLNODE:#1,")+11;
-				//打开or关闭
 				var onOff = output_text[s];
 				//色值起点
 				var sc=s+2;
-				//色值
 				var rgb=output_text.substring(sc,sc+6);
 				//亮度起点
 				var sl=sc+6;
-				//亮度值
 				var light=output_text.substring(sl,sl+2);
-				console.log("onoff-->"+onOff+";"+"rgb-->"+rgb+";"+"lignt-->"+light+";"+'@End');
 				//状态显示
 				color=rgb;
 				switchFlag=onOff;
 			}
+			//单色闪烁与七色闪烁的响应
+			if(output_text.indexOf("+CLMODE:#1,")!=-1){
+				//有效信息起点
+				var s=output_text.indexOf("+CLMODE:#1,")+11;
+				flashLight = output_text.substring(s+6,s+8);
+				flashFreq = output_text.substring(s+12,s+14);
+				var rgb = output_text.substring(s,s+6);
+				var mode = output_text.substring(s+9,s+11);
+				//状态显示
+				color=rgb;
+			}
 			//设置颜色的响应
 			if(output_text.indexOf("+CLRGB:#1,")!=-1){
-				console.log("result_test="+output_text);
 				//有效信息起点
 				var s=output_text.indexOf("+CLRGB:#1,")+10;
 				color=output_text.substring(s,s+6);
@@ -56,7 +61,6 @@ function connectWebsocket() {
 			if(output_text.indexOf("+CLTIMESHUT:#1,")!=-1){
 				var x=output_text.indexOf("+CLTIMESHUT:#1,")+15;
 				var temp=""+output_text.substring(x,output_text.size).trimRight();
-				console.log("YANSHI="+temp+'@End');
 				temp = temp.split(",");
 				if(type=="lamp"){
 					if(temp[0]==0){

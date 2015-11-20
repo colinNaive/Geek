@@ -93,16 +93,16 @@
 	<div class="img_l" onclick="touchclick('img_l')"><img src="imgs/left_before.png" /></div>
 	<div class="apply_nav">
 		<div class="apply_w " id="apply_w">
-			<!--圆环-->
-			<!--<div class="canvas-div"><canvas id="can"></canvas></div>-->
 		</div>
 	</div>
 	<div class="img_r" onclick="touchclick('img_r')"><img src="imgs/right_before.png"/></div>
 </div>
 
 <!--彩灯绝对布局-->
-<div class="canvas-div"><canvas id="can"></canvas></div>
-
+<div class="canvas-div">
+	<img class="switch-lamp" src="imgs/lampOn.png"/>
+	<canvas id="can"></canvas>
+</div>
 <div id="mybg"></div>
 
 <!--延时输入框部分-->
@@ -162,7 +162,7 @@
 	</div>
 	<div class="diag_content single_content">
 		<!--颜色滚动条-->
-		<div class="bright-div">
+		<div class="bright-div  bright-div-speed">
 			<div class="slide-bar" id="bar-single-speed">
 				<div class="slide-btn" id="btn-single-speed"></div>
 				<div class="slide-progress" id="pro-single-speed"></div>
@@ -170,7 +170,7 @@
 		</div>
 		<div class="bright-div">
 			<div class="slide-bar" id="bar-single-light">
-				<div class="slide-btn" id="btn-single-light"></div>
+				<div class="slide-btn slide-btn-light" id="btn-single-light"></div>
 				<div class="slide-progress" id="pro-single-light"></div>
 			</div>
 		</div>
@@ -185,7 +185,7 @@
 			<li class="color-li singleLi blue color-picker-alert" data-value = "11FEFE" id="singleLi"></li>
 		</ul>
 		<!--完成按钮-->
-		<img class="single_cancel" id="single_finish" src="imgs/extend_cancel.png"/>
+		<img class="single_cancel" id="single_finish" src="imgs/finish.png"/>
 	</div>
 </div> 
 
@@ -196,7 +196,7 @@
 	</div>
 	<div class="diag_content seven_content">
 		<!--颜色滚动条-->
-		<div class="bright-div">
+		<div class="bright-div bright-div-speed">
 			<div class="slide-bar" id="bar-seven-speed">
 				<div class="slide-btn" id="btn-seven-speed"></div>
 				<div class="slide-progress" id="pro-seven-speed"></div>
@@ -204,12 +204,12 @@
 		</div>
 		<div class="bright-div">
 			<div class="slide-bar" id="bar-seven-light">
-				<div class="slide-btn" id="btn-seven-light"></div>
+				<div class="slide-btn slide-btn-light" id="btn-seven-light"></div>
 				<div class="slide-progress" id="pro-seven-light"></div>
 			</div>
 		</div>
 		<!--完成按钮-->
-		<img class="seven_cancel" id="seven_finish" src="imgs/extend_cancel.png"/>
+		<img class="seven_cancel" id="seven_finish" src="imgs/finish.png"/>
 	</div>
 </div> 
 
@@ -231,26 +231,20 @@
 
 <!--底部菜单部分-->
 <div class="bottom">
-	<!--<div class="div_img_bot" >
-		<img id="time_extend" src="imgs/time_extend_before.png" onclick="touchclick('time_extend')"/>
-	</div>-->
-	<!--<div class="div_img_bot" >
-		<img id="time_set" src="imgs/time_set_before.png" onclick="touchclick('time_extend')"/>
-	</div>-->
 	<div class="div_img_bot" >
-		<img id="time_extend" src="imgs/circle.png" />
+		<img id="time_extend" src="imgs/time_extend_before.png" />
 	</div>
 	<div class="div_img_bot" >
-		<img id="time_set" src="imgs/circle.png" />
+		<img id="time_set" src="imgs/time_set_before.png" />
 	</div>
 	<div class="div_img_bot">
-		<img id="shake" src="imgs/circle.png" />
+		<img id="shake" src="imgs/shake_before.png" />
 	</div>
 	<div class="div_img_bot singleFlash">
-		<img id="singleFlash" src="imgs/circle.png" />
+		<img id="singleFlash" src="imgs/singleFlash_before.png" />
 	</div>
 	<div class="div_img_bot sevenFlash">
-		<img id="sevenFlash" src="imgs/circle.png" />
+		<img id="sevenFlash" src="imgs/sevenFlash_before.png" />
 	</div>
 </div>
 

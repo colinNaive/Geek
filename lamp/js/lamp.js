@@ -7,7 +7,6 @@ var slidePro=S("#slide-progress");
 var total=S(".header");
 var moveCircle;//手指跟随小圆
 var switchCircle;//中间开关圆
-var color="FFFFFF";
 var light="64";
 var freq=03;
 //单色滚动条
@@ -20,6 +19,10 @@ var barSevenLight,btnSevenLight,proSevenLight,maxLSevenLight;
 var arrayRandom = ["FC2429","3DFF47","2023FC","FFFD27","FE1F25","FFFFFF","11FEFE"];
 var indexRandom=0;
 var switchFlag;//打开关闭的标志位
+var flashLight,flashFreq,color;
+var timerFlagCircle=false,timerFlagNormalBar=false;//防止连续触发normal
+var timerFlagBarSingleSpeed=false,timerFlagBarSingleLight=false;//防止连续触发单色
+var timerFlagBarSevenSpeed=false,timerFlagBarSevenLight=false;//防止连续触发七色
  
 //canvas尺寸长宽相等
 canvasDiv.style.height=canvasDiv.offsetWidth+'px';
@@ -33,7 +36,7 @@ createjs.Touch.enable(canvas);
 //获取点坐标的颜色值
 canvas.addEventListener('pressmove',changeColor);
 canvas.addEventListener('mousedown',changeColor);
-canvas.addEventListener('click',centerClick);
+$(".switch-lamp").click(centerClick);
 
 //滚动条
 var baseL=Math.floor(total.offsetWidth-slideBar.offsetWidth)/2;
@@ -54,10 +57,11 @@ setLiClick();
 $("#singleFlash").click(function(){
 	//显示单色闪烁设置弹窗
 	showExtend("singleAlert");
+	//初始亮度与频率
+	flashFreq="08";flashLight="32";
 	//发送单色闪烁控制指令
-	freq="10";
-	console.log("singleFlash="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,'+freq+'\r\n')
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,'+freq+'\r\n'));
+	console.log("singleFlash="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n')
+	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
 	//单色闪烁快慢的滚动轮
 	singleSpeedSlide();
 	//单色闪烁亮度的滚动轮
@@ -65,16 +69,16 @@ $("#singleFlash").click(function(){
 	//单色闪烁颜色选择块
 	$(".singleLi").click(function(){
 		var data_value=$(this).attr("data-value");
+		flashFreq="08";
 		color = data_value;
-		console.log("link=="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n')
-		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n'));
+		console.log("link=="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n')
+		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
 	});
 });
 
 //单色闪烁设置完成
 $('#single_finish').click(function(){
 	//发送指令
-//	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,0'+freq+'\r\n'));
 	$('#mybg,#singleAlert').hide();
 });
 
@@ -82,10 +86,11 @@ $('#single_finish').click(function(){
 $("#sevenFlash").click(function(){
 	//显示单色闪烁设置弹窗
 	showExtend("sevenAlert");
+	//初始亮度与频率
+	flashFreq="08";flashLight="32";
 	//发送单色闪烁控制指令
-	freq="10";
-	console.log("sevenFlash="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,'+freq+'\r\n')
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,'+freq+'\r\n'));
+	console.log("sevenFlash="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n')
+	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n'));
 	//七色闪烁快慢的滚动轮
 	sevenSpeedSlide();
 	//七色闪烁亮度的滚动轮
@@ -160,14 +165,22 @@ function moveLightSingle(e){
 	if(L<=0){
 		L=0;
 	}else if(L>=maxLSingle){
-		L=maxLSingle;
+		L=maxLSingle-0.1;
 	}
 	moveBar(L/maxLSingle,"singleSpeed");
-	//设置亮度
-	var light_=(L/maxLSingle)*10;
-	freq=Math.floor(light_);
-	console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n');
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n'));
+	//设置快慢
+	var freq_=(1-L/maxLSingle)*25;
+	freq_=Math.floor(freq_);
+	flashFreq=padLeftHex(freq_);
+//	timerFlagBarSingleSpeed=delaySend(timerFlagBarSingleSpeed,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
+	if(!timerFlagBarSingleSpeed){
+		timerFlagBarSingleSpeed=true;
+		setTimeout(function(){
+			timerFlagBarSingleSpeed=false;
+			console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
+		},500);
+	}
 }
 
 //改变单色闪烁亮度
@@ -184,10 +197,16 @@ function moveLightSingleLight(e){
 	//设置亮度
 	var light_=(L/maxLSingleLight)*100;
 	light_=Math.floor(light_);
-	light_=light_.toString(16);
-	light=padLeftHex(light_);
-	console.log("singlefg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n')
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',01,0'+freq+'\r\n'));
+	flashLight=padLeftHex(light_);
+//	timerFlagBarSingleLight=delaySend(timerFlagBarSingleLight,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
+	if(!timerFlagBarSingleLight){
+		timerFlagBarSingleLight=true;
+		setTimeout(function(){
+			timerFlagBarSingleLight=false;
+			console.log("singlefg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
+		},500);
+	}
 }
 
 //七色闪烁快慢调节
@@ -215,15 +234,22 @@ function moveLightSeven(e){
 	if(L<=0){
 		L=0;
 	}else if(L>=maxLSeven){
-		L=maxLSeven;
+		L=maxLSeven-0.1;
 	}
 	moveBar(L/maxLSeven,"sevenSpeed");
 	//设置亮度
-	var light_=(L/maxLSeven)*10;
-	freq=Math.floor(light_);
-	console.log("teststestset="+freq);
-	console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,0'+freq+'\r\n');
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,0'+freq+'\r\n'));
+	var light_=(1-L/maxLSeven)*25;
+	light_=Math.floor(light_);
+	flashFreq=padLeftHex(light_);
+//	timerFlagBarSevenSpeed=delaySend(timerFlagBarSevenSpeed,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n')
+	if(!timerFlagBarSevenSpeed){
+		timerFlagBarSevenSpeed=true;
+		setTimeout(function(){
+			timerFlagBarSevenSpeed=false;
+			console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n'));
+		},500);
+	}
 }
 
 //七色闪烁亮度调节
@@ -231,7 +257,6 @@ function sevenLightSlide(){
 	barSevenLight=S("#bar-seven-light");
 	btnSevenLight=S("#btn-seven-light");
 	proSevenLight=S("#pro-seven-light");
-//	alert("bar===="+barSevenLight);
 	maxLSevenLight=barSevenLight.offsetWidth;
 	barSevenLight.addEventListener('touchstart',moveLightSevenLight);
 	btnSevenLight.addEventListener('touchstart',function(e){
@@ -251,16 +276,22 @@ function moveLightSevenLight(e){
 	if(L<=0){
 		L=0;
 	}else if(L>=maxLSevenLight){
-		L=maxLSevenLight;
+		L=maxLSevenLight-0.1;
 	}
 	moveBar(L/maxLSevenLight,"sevenLight");
 	//设置亮度
 	var light_=(L/maxLSevenLight)*100;
 	light_=Math.floor(light_);
-	light_=light_.toString(16);
-	light=padLeftHex(light_);
-	console.log("sevenfg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,0'+freq+'\r\n')
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+light+',02,0'+freq+'\r\n'));
+	flashLight=padLeftHex(light_);
+//	timerFlagBarSevenLight=delaySend(timerFlagBarSevenLight,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n');
+	if(!timerFlagBarSevenLight){
+		timerFlagBarSevenLight=true;
+		setTimeout(function(){
+			timerFlagBarSevenLight=false;
+			console.log("sevenfg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n'));
+		},500);
+	}
 }
 
 //正常情况下颜色块选择
@@ -282,7 +313,6 @@ function drawCircle(){
 		oCircle.scaleX=oCircle.scaleY=can.width/w;
 		canvas.addChild(oCircle);
 		drawMove();
-		drawSwitchCircle();
 	}
 }
 
@@ -297,28 +327,36 @@ function drawMove(){
 
 //绘制中间点击小圆
 function drawSwitchCircle(){
-	switchCircle=new createjs.Shape();
-	switchCircle.graphics.beginFill("white").drawCircle(0,0,(can.width)/7);
-	switchCircle.x=(can.width)/2;
-	switchCircle.y=(can.height)/2;
-	canvas.addChild(switchCircle);
+//	switchCircle=new createjs.Shape();
+//	switchCircle.graphics.beginFill("white").drawCircle(0,0,(can.width)/7);
+//	switchCircle.x=(can.width)/2;
+//	switchCircle.y=(can.height)/2;
+//	canvas.addChild(switchCircle);
+	var img=new Image();
+	img.src='imgs/lampOn.png';
+	img.onload=function(){
+		var oCircle=new createjs.Bitmap(img.src);
+		console.log("zhixingimg="+img.src);
+		var w=this.width;
+		var h=this.height;
+		oCircle.scaleX=oCircle.scaleY=(can.width)/(3*w);
+		oCircle.x=oCircle.y=0;
+		canvas.addChild(oCircle);
+	}
 }
 
 //中间点击打开关闭
-function centerClick(e){
-	var x=e.stageX;
-	var y=e.stageY;
-	if(x>can.width/3 &&x<can.width/3*2 && y>can.height/3 && y<can.height/3*2){
-		console.log("switch_flag="+switchFlag);
+function centerClick(){
 		switch(switchFlag){
 			case "1":
+				$(".switch-lamp").attr('src',"imgs/lampOff.png"); 
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLCLOSE=1\r\n'));
 			break;
 			case "2":
+				$(".switch-lamp").attr('src',"imgs/lampOn.png"); 
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLOPEN=1\r\n'));
 			break;
 		}
-	}
 }
 
 //改变亮度
@@ -333,8 +371,16 @@ function moveLight(e){
 	moveBar(L/maxL,"normal");
 	//设置亮度
 	var light_=(L/maxL)*100;
-	light_=light_.toString(16);
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light_+'\r\n'));
+	light_=Math.floor(light_);
+	light=padLeftHex(light_);
+	if(!timerFlagNormalBar){
+		timerFlagNormalBar=true;
+		setTimeout(function(){
+			timerFlagNormalBar=false;
+			console.log("normalcon="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light_+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light_+'\r\n'));
+		},500);
+	}
 }
 
 //改变颜色
@@ -346,17 +392,33 @@ function changeColor(e){
 	var rgba=cnt.getImageData(x,y,1,1).data;
 	moveCircle.x=x;
 	moveCircle.y=y;
-//	cnt.globalAlpha=(rgba[3]/255).toFixed(2);//保留两位小数
-	//移动alpha
-	moveBar(Number(rgba[3]/255).toFixed(2),"normal");
 	//设置颜色
-	var color=rgba[0].toString(16)+rgba[1].toString(16)+rgba[2].toString(16);
+	var color_rgb=rgba[0].toString(16)+rgba[1].toString(16)+rgba[2].toString(16);
 	//有效区域
 	if(x>can.width/3 &&x<can.width/3*2 && y>can.height/3 && y<can.height/3*2){
 		return;
 	}
-	SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+'64\r\n'));
+	if(!timerFlagCircle){
+		timerFlagCircle=true;
+		setTimeout(function(){
+			timerFlagCircle=false;
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color_rgb+'64\r\n'));
+		},500);
+	}
+//  timerFlagCircle=delaySend(timerFlagCircle,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color_rgb+'64\r\n');
 }
+
+//延时发送
+//function delaySend(flag,command){
+//	if(!flag){
+//		flag=true;
+//		setTimeout(function(){
+//			flag=false;
+//			SendData(Encrypt(command));
+//		},500);
+//	}
+//	return flag;
+//}
 
 //拖动滚动条
 function moveBar(pre,Str){
@@ -384,12 +446,17 @@ function moveBar(pre,Str){
 	}
 };
 
-//补全两位数
-function padLeftHex(str){ 
-	if(str >= 16) 
-		return str; 
-	else 
-		return "0" +str; 
+//补全两位数,输入十进制，输出十六进制
+function padLeftHex(str){
+	var result;
+	result=str.toString(16);
+	if(str < 16){
+		if(result==0){
+			result=5;
+		}
+		result= "0" +result; 
+	}
+	return result;
 } 
 
 //摇一摇初始化

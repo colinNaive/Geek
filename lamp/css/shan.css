@@ -1,5 +1,5 @@
 *{margin:0;padding:0;}
-body{font-size:12px;font-family:宋体,arial, helvetica, sans-serif;}
+body{font-size:12px;font-family:宋体,arial, helvetica, sans-serif;background:#FAFAFA}
 html,body{width: 100%; height:100%;overflow:hidden;}
 /*抬头*/
 .header{background: url(../imgs/xian.png);background-repeat:no-repeat;background-size: 100% auto ;width: 100%;height: 25%;}
@@ -20,7 +20,8 @@ html,body{width: 100%; height:100%;overflow:hidden;}
 .edit{height: 25px;/*display: none;*/margin-bottom: 10px;}
 .name{color: #00D1DA; font-size:25px; text-align: center;/*background: #666;*//*display: none;*/}
 /*中间彩灯*/
-.canvas-div{visibility: none; position:absolute; width: 7.2rem;height:7.2rem;/*background-color: #c00;*/left:50%;margin-left:-3.6rem;/*margin-left: 0.6rem;margin-right: 0.6rem*/}
+.canvas-div{visibility: none; position:absolute; width: 7.2rem;height:7.2rem;left:50%;margin-left:-3.6rem;}
+.switch-lamp{position:absolute; width: 2.4rem;height:2.4rem;left:50%;top:50%; margin-left:-1.2rem;margin-top: -1.2rem;}
 #can{width:100%;height:100%}
 /*华丽的分隔符*/
 .clear{ clear:both}/**************************这个属性到底为什么能分割？******************/
@@ -32,7 +33,7 @@ html,body{width: 100%; height:100%;overflow:hidden;}
 	position: relative;/**********************这个属性的作用是？？*************************/
 	/*？？？？？？？？？？？？？？？？？？？这个属性是？？？？？？？？？？？？？？？？？？？？？？？？？？？*/
 	background:url("../imgs/alpha_light.png") 0px center no-repeat, url("../imgs/alpha_deep.png") 100% center no-repeat;
-	background-size: 10%;
+	background-size: auto 100%;
 }
 .slide-bar{
 	width: 70%;
@@ -65,16 +66,15 @@ html,body{width: 100%; height:100%;overflow:hidden;}
 }
 /*颜色选择块*/
 .color-picker{
-	width: 74%;
+	width: 77%;
 	margin:auto;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           : auto;
 	margin-top: 10%;
 	text-align: center;
 }
 .color-picker li{
 	display: inline-block;
-	width:8%;
+	width:11%;
 	height:30px;
-	margin-right: 4px;
 	background-color: #c00;
 }
 .color-picker li.red{background-color: #c00;}
@@ -91,12 +91,12 @@ li{list-style: none;}
 .div_img_setting img{width:auto;height:60px;float:left;margin-left: 13px;}
 .div_img_setting_first img{margin-left: 13px;width:auto;}
 /*底下三个*/
-.bottom{background:#00C5FF; display: -moz-box;display: -webkit-box; display: box; position:absolute;bottom:0.2%;margin-left: auto;margin-right: auto;width: 100%;height:10%;}
-.div_img_bot{-moz-box-flex: 1;-webkit-box-flex: 1; box-flex: 1;background: #f00;-webkit-box-pack:center;-webkit-box-align:center;height: 100%;text-align: center;}
-.div_img_bot img{height: 100%;background: #0f0;text-align:center}
+.bottom{/*background:#00C5FF;*/ display: -moz-box;display: -webkit-box; display: box; position:absolute;bottom:0.2%;margin-left: auto;margin-right: auto;width: 100%;height:10%;}
+.div_img_bot{-moz-box-flex: 1;-webkit-box-flex: 1; box-flex: 1;/*background: #f00;background-size: 90%; */-webkit-box-pack:center;-webkit-box-align:center;height: 100%;text-align: center;}
+.div_img_bot img{height: 100%;/*background: #0f0;background-size: 90%;*/ text-align:center}
 .appTime{width: 100%;ime-mode: disabled; font-size:0px;border:0;background: url(../imgs/time_set_before.png);background-size: 100%; vertical-align:middle;}
 /* 延时弹窗 */
-.alert {border-radius: 0.4rem;width:80%;left:10%;background:white;z-index:1000;position:absolute;display: none;}  
+.alert {border-radius: 0.4rem;width:80%;left:10%;background:#FAFAFA;z-index:1000;position:absolute;display: none;}  
 .time_input{
 	font-size:15px;
 	vertical-align:middle;
@@ -269,18 +269,27 @@ color: white;
 	width: 2.4rem;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 10px;
+	margin-top: 15px;
 }
 .color-picker-alert{
 	width:10%;
 	margin-right: 0px;
 }
+#btn-single-speed,#btn-single-light{left:50%}
+#pro-single-speed,#pro-single-light{width: 50%;}
 /*七色闪烁弹窗*/
 .seven_cancel{
 	display: block;
 	width: 2.4rem;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 10px;
+	margin-top: 19px;
 }
-.seven_content{height: 130px;}
+.seven_content{height: 125px;}
+#btn-seven-speed,#btn-seven-light{left:50%}
+#pro-seven-speed,#pro-seven-light{width: 50%;}
+/*快慢滚动条*/
+.bright-div-speed{
+	background:url("../imgs/slower.png") 0px center no-repeat, url("../imgs/faster.png") 100% center no-repeat;
+	background-size: auto 100%;
+}
