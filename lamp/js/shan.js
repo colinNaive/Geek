@@ -1,15 +1,11 @@
 var settingClickFlag=1;
-var canClick=true;
+var canClick=true;//允许点击
+var ws;
 $(function(){
-	$("#appTime").click(function(){
-		if($('.name').css("color")=="rgb(0, 209, 218)"){
-			window.location.href="http://www.shuworks.com/HFQL/smart/timer.php?mac="+mac+"&passWord="+passWord;
-		}else{
-			alert("该设备离线");
-		}
-	});
     //添加设备列表
     addDeviceList('apply_w');
+    //websocket连接
+	connectWebsocket();
     //延时弹窗隐藏
     $('#mybg').hide();
 	$li1 = $(".apply_nav .apply_array");
@@ -27,18 +23,14 @@ $(function(){
 	$('.box_input').hide();
 	$('.box').hide();
 	$('.extend_time').hide();
-	lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
 	var time_extend=1,time_set=1,power_protect=1;
 	//插座按钮状态
 	var state = false;
 	var output = 'CONTROL ' + mac + ' P ' + passWord + ' AT+TIMETASK=1,';
-	var ws;
 	var editpass;
 	var lc1 = currentIndex;
 	var rc1 = $li1.length-1-currentIndex;
 	var currentLocation=0;
-	//websocket连接
-	connectWebsocket();
 	/*******插座部分控制*********/
 	var deviceList=$('.apply_array .apply_img img');
 	//初始化设备mac、note、password、type
@@ -46,6 +38,8 @@ $(function(){
 	note = note_[currentIndex];
 	passWord = password_[currentIndex].trim();
 	type = type_[currentIndex].trim();
+	lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
+	console.log("type="+type);
 	//初始化当前设备位置
 	currentLocation= 6.8*currentIndex;
 	$window1.animate({left:'-='+currentLocation+'rem'}, 1);
@@ -80,6 +74,7 @@ $(function(){
 		mac=mac_[currentIndex].trim();
 		note = note_[currentIndex];
 		type = type_[currentIndex];
+		console.log("left_type="+type);
 		passWord = password_[currentIndex].trim();
 		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+NODE=1\r\n'));
 		lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
@@ -98,6 +93,7 @@ $(function(){
 		mac=mac_[currentIndex].trim();
 		note = note_[currentIndex];
 		type = type_[currentIndex];
+		console.log("right_type="+type);
 		passWord = password_[currentIndex].trim();
 		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+NODE=1\r\n'));
 		lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
@@ -105,40 +101,54 @@ $(function(){
 	
 	/* 弹窗 */
 	$('#time_extend').click(function(){
-		if($('.name').css("color")=="rgb(0, 209, 218)"){
+		if(canClick){
 			$(".box_input,.box,.extend_time").hide();//显示之前先全部隐藏
 			showExtend("alert");//延时弹窗显示
 			console.log("type_exten="+type);
-			if(type=="plug"){
+			if(type=="0"){
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1?\r\n'));
-			}else if(type=="lamp"){
+			}else if(type=="W05"){
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1?\r\n'));
 			}
 		}else{
 			alert("该设备离线");
 		}
 	});
+	
+	//定时跳转
+	$('#time_set').click(function(){
+		if(canClick){
+			console.log("type="+type);
+			window.location.href="http://www.shuworks.com/HFQL/smart/timer.php?mac="+mac+"&passWord="+passWord+"&type="+type;
+		}else{
+			alert("该设备离线");
+		}
+	});
+	
 	//关闭延时
 	$('#extend_cancel').click(function(){
 		$('#mybg,#alert,.extend_time').hide();
-		if(type=="plug"){
+		if(type=="0"){
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1,2,0\r\n'));
-		}else if(type=="lamp"){
+		}else if(type=="W05"){
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1,2,0\r\n'));
 		}
 	});
+	
 	//恢复出厂设置点击
 	$('#reset').click(function(e){
 		e.stopPropagation();
-		if($('.name').css("color")=="rgb(0, 209, 218)"){
+		if(canClick){
 			HandleOnClose();
 		}else{
 			alert("该设备离线");
 		}
 	});
+	
+	//修改密码
 	$('#change_psw').click(function(e){
 		e.stopPropagation();
-		if($('.name').css("color")!="rgb(0, 209, 218)"){
+		if(!canClick){
 			alert("该设备离线");
 			return;
 		}
@@ -209,6 +219,7 @@ $(function(){
 //	});
 	//设置按钮点击
 	$('#select').click(settingClick);
+	
 	//延时弹窗点击ok
 	var delay_switch=1;
 	var delay_long=0;
@@ -220,20 +231,22 @@ $(function(){
 		}
 		delay_long=$('#time_extend_input').val();
 		if(delay_long!=""){
-			if(type=="plug"){
+			if(type=="0"){
 				console.log("chazuodianji");
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1,' + delay_switch + ',' + delay_long + '\r\n'));
-			}else if(type=="lamp"){
+			}else if(type=="W05"){
 				console.log("caidengdianji");
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1,' + delay_switch + ',' + delay_long + '\r\n'));
 			}
 		}
 		$('#mybg,#alert,.box,.box_input').hide();
 	});
+	
 	//back键返回
 	$('#back').click(function(){
 		window.location.href="http://www.shuworks.com/HFQL/smart/main.php";
 	});
+	
 	//更改名称
 	$('.name').click(function(e){
 		$('.edit').css("display","");
@@ -255,6 +268,9 @@ $(function(){
 	});
 	$(document).click(function(){
 	    $('.setting_menu .div_img_setting_then').css('display','none');
+	    $("#shake").attr('src',"imgs/shake_before.png"); 
+	   	//取消摇一摇监听
+	   	stopShake();
 	});
 });
 
@@ -266,7 +282,7 @@ function addDeviceList(obj) {
 	var div_out = document.getElementById(obj);
 	for(var i=0;i<count;i++){
 		switch(type_[i]){
-			case "plug":
+			case "0":
 				var div = document.createElement("div");
 				div.setAttribute("class","apply_array");
 				var div_in = document.createElement("div");
@@ -284,7 +300,7 @@ function addDeviceList(obj) {
 				div.appendChild(edit);
 				div.appendChild(label);
 			break;
-			case "lamp":
+			case "W05":
 				var div = document.createElement("div");
 				div.setAttribute("class","apply_array");
 			break;
@@ -296,172 +312,6 @@ function addDeviceList(obj) {
 	}
 }
 
-//连接websocket
-function ToggleConnectionClicked() {
-	try {
-		ws = new WebSocket("ws://121.42.46.59:5120", "HFWiFidevice-protocol"); //连接服务器		
-		ws.onopen = function(event) {
-			console.log("与服务器建立了连接");//this.readyState=1
-			num = 0;
-		};
-		ws.onmessage = function(event) {
-			console.log("接收到服务器发送的数据");
-			var temp = "" + event.data;
-			var reg = /\s/g;
-			var output = temp.replace(reg, "");
-			var output_text = Decrypt(output);
-			console.log(output_text);
-			switch (num) {
-				case 0:
-					SendData(Encrypt('E1B26EFADF519869CD1A73C7CB9904C1'));
-					num++;
-					break;
-				case 1:
-					SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLNODE=1\r\n'));
-					num++;
-					break;	
-			}
-			if(output_text.indexOf("+NODE:#1,")!=-1){
-				console.log("result_test="+output_text);
-				var x=output_text.indexOf("+NODE:#1,")+9;
-				output_text.split("");
-				console.log(output_text[x]+'@End');
-				if(output_text[x]==1){
-					RecieveToggle(true);
-				}
-				if(output_text[x]==2){
-					RecieveToggle(false);
-				}
-			}
-			if(output_text.indexOf("NOLINK")!=-1){
-				$('.name').html("设备离线");
-				$('.name').css('color','red');
-				canClick=false;
-				$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
-			}
-			if(output_text.indexOf("+NODE:")!=-1){
-				if(sessionStorage.getItem("note")){
-					note=sessionStorage.getItem("note");
-				};
-				$('.name').html(note);
-				$('.name').css('color','#00D1DA');
-				canClick=true;
-			}
-			if(output_text.indexOf("+EDITPWD:")!=-1){
-				var x=output_text.indexOf("+EDITPWD:")+9;
-				var temp="" + output_text.substring(x,output_text.size).trimRight();
-				alert('密码设置成功!\n当前密码'+temp);
-				password_[index_] = editpass;
-				passWord = editpass;
-				var xmlhttp;
-				if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-					xmlhttp=new XMLHttpRequest();
-				}else{// code for IE6, IE5
-					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-				}
-				xmlhttp.onreadystatechange=function(){
-					if (xmlhttp.readyState==4 && xmlhttp.status==200){
-						alert(xmlhttp.responseText);
-					}
-				}
-				var url = "device.info/password.php";
-				url = url + "?mac=" + mac_[index_];
-				url = url + "&openid=" + openid;
-				url = url + "&pwd=" + passWord;
-				xmlhttp.open("POST",url,true);
-				xmlhttp.send();	
-			}
-			if(output_text.indexOf("+PWD:1")!=-1){
-				alert('设备密码错误，请与设备所有者联系!');
-			}												
-			if(output_text.indexOf("+TIMESHUT:#1,")!=-1){
-				var x=output_text.indexOf("+TIMESHUT:#1,")+13;
-				var temp=""+output_text.substring(x,output_text.size).trimRight();
-				console.log(temp+'@End');
-				temp = temp.split(",");
-				if(temp[0]==0){
-					$('.extend_time').show();
-					$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后关闭');
-				}
-				if(temp[0]==1){
-					$('.extend_time').show();
-					$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后开启');
-				}
-				if(temp[0]==2){
-					$('.box').show();
-					$('.box_input').show();
-				}
-			}
-			if(output_text.indexOf("+TIMETASK:#1,")!=-1){
-				var x=output_text.indexOf("+TIMETASK:#1,")+13;
-				var temp=""+output_text.substring(x,output_text.size).trimRight();
-				console.log(temp+'@End');
-				temp = temp.split(",");
-				console.log('HEX:' + temp[0]);
-				var _1th = parseInt(temp[0],16).toString(2);
-				console.log('BIN:' + _1th);
-				var t = parseInt(temp[0],16).toString(2);
-				_1th = _1th.split("");
-				var text = '定时:';
-				if(_1th[0]==1){
-					if(_1th[1]==1){
-						text=text+' 周六 ';
-					}
-					if(_1th[2]==1){
-						text=text+' 周五 ';
-					}
-					if(_1th[3]==1){
-						text=text+' 周四 ';
-					}
-					if(_1th[4]==1){
-						text=text+' 周三 ';
-					}
-					if(_1th[5]==1){
-						text=text+' 周二 ';
-					}
-					if(_1th[6]==1){
-						text=text+' 周一 ';
-					}
-					if(_1th[7]==1){
-						text=text+' 周日 ';
-					}
-					text = text + ' ' + parseInt(t.substring(11,16),2).toString(10);
-					text = text + ':' + padLeft(parseInt(t.substring(16,32),2).toString(10));
-					if(parseInt(t.substring(8,11),2).toString(10)==1){
-						text=text+' 开启';
-					}
-					if(parseInt(t.substring(8,11),2).toString(10)==2){
-						text=text+' 关闭';
-					}
-					console.log(text);
-					$('#timer_text').html(text);								
-				}else{
-					$('#timer_text').html("当前无定时任务");
-				}
-			}
-			if(output_text.indexOf("+V:")!=-1){
-				console.log("banben="+output_text);
-				var x=output_text.indexOf("+V:")+3;
-				var temp=""+output_text.substring(x,output_text.size).trimRight();
-				console.log("banbenhao="+temp+'@End');
-//				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+UPDATE='+temp+'\r\n'));
-			}
-		};
-		ws.onclose = function(event) {
-			if(mac != ''){
-				alert("与服务器断开连接"); //this.readyState=3
-			}
-			AlertDeviceState();
-			$('#link').attr("disabled", false);
-		};
-		ws.onerror = function(event) {
-			AlertDeviceState();
-			alert("服务器异常！请稍后再试");
-		};
-	} catch (ex) {
-		alert(ex.message);
-	}
-}
 //显示延时弹窗
 function showExtend(Str){
 	var myAlert = document.getElementById(Str); 
@@ -495,7 +345,6 @@ function HandleOnClose() {
 }
 //警告
 function AlertDeviceState(){
-//	alert("jinggao");
 	$('.name').html("设备离线");
 	$('.name').css('color','red');
 	$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
@@ -574,19 +423,24 @@ function settingClick(e){
 //彩灯颜色滚动条和选择块的显示控制
 function lampBottomDisplay(){
 	//若当前为彩灯，则显示颜色滚动条和颜色选择块
-	if(currentIndex==1){
+	console.log("type_l="+type);
+	if(type=="W05"){
 		$('#bright-div,#color-picker').show();
 		$('.div_img_setting_first').hide();
 		setTimeout("delayShow()",300);
 		$('.singleFlash').show();
 		$('.sevenFlash').show();
+		$('.shake').show();
+		$('.power_protect').hide();
 		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLNODE=1\r\n'));
-	}else{
+	}else if(type=="0"){
 		$('#bright-div,#color-picker').hide();
 		$('.div_img_setting_first').show();
 		$('.canvas-div').hide();
 		$('.sevenFlash').hide();
 		$('.singleFlash').hide();
+		$('.shake').hide();
+		$('.power_protect').show();
 	}
 }
 

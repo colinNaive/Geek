@@ -106,9 +106,12 @@ $('#seven_finish').click(function(){
 var SHAKE_THRESHOLD = 3000;
 var last_update = 0;
 var x = y = z = last_x = last_y = last_z = 0;
-$('#shake').click(function(){
+$('#shake').click(function(e){
+	e.stopPropagation();
+	$("#shake").attr('src',"imgs/shake.png"); 
 	initShake();
 });
+
 /************************************以下是函数部分*******************************/
 
 function shakeChange(){
@@ -347,16 +350,28 @@ function drawSwitchCircle(){
 
 //中间点击打开关闭
 function centerClick(){
-		switch(switchFlag){
-			case "1":
-				$(".switch-lamp").attr('src',"imgs/lampOff.png"); 
-				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLCLOSE=1\r\n'));
-			break;
-			case "2":
-				$(".switch-lamp").attr('src',"imgs/lampOn.png"); 
-				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLOPEN=1\r\n'));
-			break;
-		}
+	switch(switchFlag){
+		case "1":
+			$(".switch-lamp").attr('src',"imgs/lampOff.png"); 
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLCLOSE=1\r\n'));
+		break;
+		case "2":
+			$(".switch-lamp").attr('src',"imgs/lampOn.png"); 
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLOPEN=1\r\n'));
+		break;
+	}
+}
+
+function switchDisplay(switchFlag){
+	console.log("switchDisplay="+switchDisplay);
+	switch(switchFlag){
+		case "1":
+			$(".switch-lamp").attr('src',"imgs/lampOn.png"); 
+		break;
+		case "2":
+			$(".switch-lamp").attr('src',"imgs/lampOff.png"); 
+		break;
+	}
 }
 
 //改变亮度
@@ -377,8 +392,8 @@ function moveLight(e){
 		timerFlagNormalBar=true;
 		setTimeout(function(){
 			timerFlagNormalBar=false;
-			console.log("normalcon="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light_+'\r\n');
-			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light_+'\r\n'));
+			console.log("normalcon="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light+'\r\n');
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light+'\r\n'));
 		},500);
 	}
 }

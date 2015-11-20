@@ -1,8 +1,12 @@
 <?php
 	error_reporting(0);
-	$openid="ozcT3wn5WskYwQINmFlJYcMdbkZs";
+	if (isset($_GET['openid'])){
+	    $openid = $_GET['openid']; 
+	}
+	if (isset($_GET['sequence'])){
+	    $sequence = $_GET['sequence']; 
+	}
 	$conn = mysql_connect("localhost","root", "qinlu126"); 
-	$sequence=0;
 	if (!$conn){
 		die("连接数据库失败：" . mysql_error());
 	}
@@ -14,28 +18,16 @@
 	$index=0;
 	while($result = mysql_fetch_array($check_query))
 	{
-		if($index==0){
-			$mac[$index]="549A11C01174";
-			$note[$index]="123";
-			$password[$index]='888888';
-			$type[$index]='plug';
-		}elseif($index==1){
-			$mac[$index]="549A11C001C9";
-			$note[$index]="123";
-			$password[$index]='888888';
-			$type[$index]='lamp';
-		}else{
 			$mac[$index] = $result['mac'];
 			$note[$index] = $result['note'];
 			$password[$index] = $result['pwd'];
-			$type[$index] = $result['type'];
+			$type[$index] = $result['device'];
 			if($result['pwd'] == ""){
 				$password[$index] = '888888';
 			}
-			if($result['type'] == ""){
-				$type[$index] = 'plug';
+			if($result['device'] == ""){
+				$type[$index] = '0';
 			}
-		}
 		$index++;
 	}
 ?>
@@ -58,8 +50,8 @@
 <script type="text/javascript">
 		document.getElementsByTagName('html')[0].style.fontSize=document.documentElement.clientWidth / 12 +"px";
 </script>
-<script src="js/shan.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/websocket.js"></script>
+<script src="js/shan.js" type="text/javascript"></script>
 <link href="css/shan.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 	//控制部分变量
@@ -237,7 +229,7 @@
 	<div class="div_img_bot" >
 		<img id="time_set" src="imgs/time_set_before.png" />
 	</div>
-	<div class="div_img_bot">
+	<div class="div_img_bot shake">
 		<img id="shake" src="imgs/shake_before.png" />
 	</div>
 	<div class="div_img_bot singleFlash">
@@ -245,6 +237,9 @@
 	</div>
 	<div class="div_img_bot sevenFlash">
 		<img id="sevenFlash" src="imgs/sevenFlash_before.png" />
+	</div>
+	<div class="div_img_bot power_protect">
+		<img id="power_protect" src="imgs/power_protect_before.png" />
 	</div>
 </div>
 

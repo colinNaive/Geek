@@ -47,6 +47,7 @@ function connectWebsocket() {
 				var mode = output_text.substring(s+9,s+11);
 				//状态显示
 				color=rgb;
+				switchDisplay("1");
 			}
 			//设置颜色的响应
 			if(output_text.indexOf("+CLRGB:#1,")!=-1){
@@ -56,13 +57,14 @@ function connectWebsocket() {
 				var sl=s+6;
 				light=output_text.substring(sl,sl+2);
 				console.log("color_feedback="+color+";"+"light_feedback="+light);
+				switchDisplay("1");
 			}
 			//设置延时的响应
 			if(output_text.indexOf("+CLTIMESHUT:#1,")!=-1){
 				var x=output_text.indexOf("+CLTIMESHUT:#1,")+15;
 				var temp=""+output_text.substring(x,output_text.size).trimRight();
 				temp = temp.split(",");
-				if(type=="lamp"){
+				if(type=="W05"){
 					if(temp[0]==0){
 						$('.extend_time').show();
 						$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后关闭');
@@ -87,6 +89,7 @@ function connectWebsocket() {
 				$('.name').css('color','red');
 				canClick=false;
 				$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
+				switchDisplay("2");
 			}
 			if(output_text.indexOf("+NODE:")!=-1){
 				if(sessionStorage.getItem("note")){
@@ -128,7 +131,7 @@ function connectWebsocket() {
 				var temp=""+output_text.substring(x,output_text.size).trimRight();
 				console.log(temp+'@End');
 				temp = temp.split(",");
-				if(type=="plug"){
+				if(type=="0"){
 					if(temp[0]==0){
 						$('.extend_time').show();
 						$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后关闭');
