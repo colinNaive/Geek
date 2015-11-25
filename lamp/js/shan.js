@@ -1,6 +1,9 @@
+var ws;
+/*********状态初始化************/
 var settingClickFlag=1;
 var canClick=true;//允许点击
-var ws;
+var state = false,state_up=false,state_down=false,state_total_on=false,state_total_off=false;//插排上的开关状态
+var chosenButton=1;
 $(function(){
     //添加设备列表
     addDeviceList('apply_w');
@@ -18,21 +21,17 @@ $(function(){
 	var clickEvent="ontouchstart" in document.documentElement ? "touchstart" :"click";
 	var myAlert = document.getElementById("alert"); 
 	$('.setting_menu .div_img_setting_then').css('display','none');
-	$('.edit').css("display","none");
-	//默认隐藏
 	$('.box_input').hide();
 	$('.box').hide();
 	$('.extend_time').hide();
 	var time_extend=1,time_set=1,power_protect=1;
-	//插座按钮状态
-	var state = false;
 	var output = 'CONTROL ' + mac + ' P ' + passWord + ' AT+TIMETASK=1,';
 	var editpass;
 	var lc1 = currentIndex;
 	var rc1 = $li1.length-1-currentIndex;
 	var currentLocation=0;
-	/*******插座部分控制*********/
-	var deviceList=$('.apply_array .apply_img img');
+	var deviceList;
+	var deviceListStripUp,deviceListStripDown;
 	//初始化设备mac、note、password、type
 	mac=mac_[currentIndex].trim();
 	note = note_[currentIndex];
@@ -41,27 +40,11 @@ $(function(){
 	lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
 	console.log("type="+type);
 	//初始化当前设备位置
-	currentLocation= 6.8*currentIndex;
+	currentLocation= 8.4*currentIndex;
 	$window1.animate({left:'-='+currentLocation+'rem'}, 1);
-	for(var i=0;i<deviceList.length;i++){
-		deviceList[i].id="No" + i;
-	}
 	/*******插座部分控制*********/
-	deviceList.click(function(){
-		if(!canClick){
-			return;
-		}
-		if(state){
-			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLOSE=1\r\n'));
-			$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
-			state = false;
-		}else{
-			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+OPEN=1\r\n'));
-			$('#No'+currentIndex).attr('src',"imgs/plug.png"); 
-			state = true;
-		}
-	});
-	//左右位置移动
+	addDeviceListControl();
+	/*******左右位置移动*********/
 	$left1.click(function(){
 		if (lc1 < 1) {
 			alert("已经是第一台设备");
@@ -76,7 +59,6 @@ $(function(){
 		type = type_[currentIndex];
 		console.log("left_type="+type);
 		passWord = password_[currentIndex].trim();
-		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+NODE=1\r\n'));
 		lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
 	});
 
@@ -95,7 +77,6 @@ $(function(){
 		type = type_[currentIndex];
 		console.log("right_type="+type);
 		passWord = password_[currentIndex].trim();
-		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+NODE=1\r\n'));
 		lampBottomDisplay();//彩灯颜色滚动条和颜色选择块的显示控制
 	});
 	
@@ -109,6 +90,9 @@ $(function(){
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1?\r\n'));
 			}else if(type=="W05"){
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1?\r\n'));
+			}else if(type=="W04"){
+				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSTIMESHUT='+chosenButton+'?\r\n'));
+//				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSDFT\r\n'));
 			}
 		}else{
 			alert("该设备离线");
@@ -119,7 +103,7 @@ $(function(){
 	$('#time_set').click(function(){
 		if(canClick){
 			console.log("type="+type);
-			window.location.href="http://www.shuworks.com/HFQL/smart/timer.php?mac="+mac+"&passWord="+passWord+"&type="+type;
+			window.location.href="http://www.shuworks.com/HFQL/smart/timer.php?mac="+mac+"&passWord="+passWord+"&type="+type+"&loc="+chosenButton;
 		}else{
 			alert("该设备离线");
 		}
@@ -132,6 +116,8 @@ $(function(){
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1,2,0\r\n'));
 		}else if(type=="W05"){
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1,2,0\r\n'));
+		}else if(type=="W04"){
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSTIMESHUT='+chosenButton+',2,0\r\n'));
 		}
 	});
 	
@@ -232,11 +218,11 @@ $(function(){
 		delay_long=$('#time_extend_input').val();
 		if(delay_long!=""){
 			if(type=="0"){
-				console.log("chazuodianji");
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+TIMESHUT=1,' + delay_switch + ',' + delay_long + '\r\n'));
 			}else if(type=="W05"){
-				console.log("caidengdianji");
 				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLTIMESHUT=1,' + delay_switch + ',' + delay_long + '\r\n'));
+			}else if(type=="W04"){
+				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSTIMESHUT='+chosenButton+',' + delay_switch + ',' + delay_long + '\r\n'));
 			}
 		}
 		$('#mybg,#alert,.box,.box_input').hide();
@@ -250,12 +236,14 @@ $(function(){
 	//更改名称
 	$('.name').click(function(e){
 		$('.edit').css("display","");
+		$('.name').css("display","none");
 		$('.edit').val(note);
 		$('#edit'+currentIndex).focus();
 		$('.bottom').css("display","none");
 		$('.setting_menu').css("display","none");
 	});
 	$('.edit').blur(function(){
+		$('.name').css("display","");
 		$('.edit').css("display","none");
 		$('.bottom').css("display","");
 		$('.setting_menu').css("display","");
@@ -275,10 +263,139 @@ $(function(){
 });
 
 /***************************************以下为子函数部分*******************************************/
-function addDeviceList(obj) {
-	for(var j=0;j<type_.length;j++){
-		console.log("type"+j+";"+type_[j]);
+
+//添加智能设备控制部分
+function addDeviceListControl(obj){
+	/******插座部分控制******/
+	if($('.edit')!=null){
+		$('.edit').css("display","none");
 	}
+	deviceList=$('.apply_img .plug');
+	if(deviceList!=null){
+		for(var i=0;i<deviceList.length;i++){
+			deviceList[i].id="No" + i;
+		}
+		deviceList.click(function(){
+			if(!canClick){
+				return;
+			}
+			if(state){
+				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLOSE=1\r\n'));
+				$(".plug").attr('src',"imgs/plug_off.png"); 
+				state = false;
+			}else{
+				SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+OPEN=1\r\n'));
+				$('.plug').attr('src',"imgs/plug.png"); 
+				state = true;
+			}
+		});
+	}
+	/******插排部分点击控制******/
+	controlSwitchStrip(".apply_img .strip_up","up");
+	controlSwitchStrip(".apply_img .strip_down","down");
+	controlSwitchStrip(".apply_array .strip_switch_on","total_on");
+	controlSwitchStrip(".apply_array .strip_switch_off","total_off");
+}
+
+//控制插排开关函数
+function controlSwitchStrip(name,position){
+	var deviceListStrip=$(''+name);
+	if(deviceListStrip!=null){
+		deviceListStrip.click(function(){
+			if(!canClick){
+				return;
+			}
+			switch(position){
+				case "up":
+					//先选中再允许点击
+					if(chosenButton==1){
+						if(state_up){
+							SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSCLOSE=1\r\n'));
+							deviceListStrip.attr('src',"imgs/plug_off.png"); 
+							state_up = false;
+						}else{
+							SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSOPEN=1\r\n'));
+							deviceListStrip.attr('src',"imgs/plug.png"); 
+							state_up = true;
+						}
+					}else{
+						chosenButton=1;
+						//chosenButton1选中
+						$(".chosenButton1").css("background","#00D1DA");
+						$(".chosenButton2").css("background","#A5A5A5");
+					}
+				break;
+				case "down":
+					//先选中再允许点击
+					if(chosenButton==2){
+						if(state_down){
+							SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSCLOSE=2\r\n'));
+							deviceListStrip.attr('src',"imgs/plug_off.png"); 
+							state_down = false;
+						}else{
+							SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSOPEN=2\r\n'));
+							deviceListStrip.attr('src',"imgs/plug.png"); 
+							state_down = true;
+						}
+					}else{
+						chosenButton=2;
+						//chosenButton2选中
+						$(".chosenButton2").css("background","#00D1DA");
+						$(".chosenButton1").css("background","#A5A5A5");
+					}
+				break;
+				case "total_on":
+					if(!state_total_on){
+						SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSOPEN=0\r\n'));
+						deviceListStrip.attr('src',"imgs/total_on.png"); 
+						state_total_on = true;
+					}
+				break;
+				case "total_off":
+					if(!state_total_off){
+						SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSCLOSE=0\r\n'));
+						deviceListStrip.attr('src',"imgs/total_off.png"); 
+						state_total_off = true;
+					}
+				break;
+			}
+		});
+	}
+}
+
+//插排开关状态显示
+function switchStripState(up,down){
+	//上面一层
+	if(up==1){
+		$(".apply_img .strip_up").attr('src',"imgs/plug.png"); 
+	}else if(up==2){
+		$(".apply_img .strip_up").attr('src',"imgs/plug_off.png"); 
+	}
+	//下面一层
+	if(down==1){
+		$(".apply_img .strip_down").attr('src',"imgs/plug.png"); 
+	}else if(down==2){
+		$(".apply_img .strip_down").attr('src',"imgs/plug_off.png"); 
+	}
+	//全开全关
+	if(up==1&&down==1){
+		$(".apply_array .strip_switch_on").attr('src',"imgs/total_on.png"); 
+		state_total_on=true;
+	}else{
+		$(".apply_array .strip_switch_on").attr('src',"imgs/total_on_before.png"); 
+		state_total_on=false;
+	}
+	if(up==2&&down==2){
+		$(".apply_array .strip_switch_off").attr('src',"imgs/total_off.png"); 
+		state_total_off=true;
+	}else{
+		$(".apply_array .strip_switch_off").attr('src',"imgs/total_off_before.png"); 
+		state_total_off=false;
+	}
+}
+
+//添加智能设备
+function addDeviceList(obj) {
 	var div_out = document.getElementById(obj);
 	for(var i=0;i<count;i++){
 		switch(type_[i]){
@@ -289,6 +406,7 @@ function addDeviceList(obj) {
 				div_in.setAttribute("class","apply_img");
 				var img = document.createElement("img");
 				img.setAttribute("src","imgs/plug.png");
+				img.setAttribute("class","plug");
 				var label = document.createElement("label");
 				label.setAttribute("class","name");
 				label.innerHTML = noteList[i];
@@ -304,8 +422,48 @@ function addDeviceList(obj) {
 				var div = document.createElement("div");
 				div.setAttribute("class","apply_array");
 			break;
-			case "strip":
-			
+			case "W04":
+				var div = document.createElement("div");
+				div.setAttribute("class","apply_array");
+					var div_in = document.createElement("div");
+					div_in.setAttribute("class","apply_img");
+						//图片外包着的div
+						var div_img1 = document.createElement("div");
+						div_img1.setAttribute("class","div_img1");
+							var img1 = document.createElement("img");
+							img1.setAttribute("src","imgs/plug.png");
+							img1.setAttribute("class","strip_up");
+							var div_chosen1 = document.createElement("div");
+							div_chosen1.setAttribute("class","chosenButton1");
+						div_img1.appendChild(img1);
+						div_img1.appendChild(div_chosen1);
+						//图片外包着的div
+						var div_img2 = document.createElement("div");
+						div_img2.setAttribute("class","div_img2");
+							var img2 = document.createElement("img");
+							img2.setAttribute("src","imgs/plug.png");
+							img2.setAttribute("class","strip_down");
+							var div_chosen2 = document.createElement("div");
+							div_chosen2.setAttribute("class","chosenButton2");
+						div_img2.appendChild(img2);
+						div_img2.appendChild(div_chosen2);
+					div_in.appendChild(div_img1);
+					div_in.appendChild(div_img2);
+					//全关
+					var img_1 = document.createElement("img");
+					img_1.setAttribute("src","imgs/strip_on.png");
+					img_1.setAttribute("class","strip_switch_on");
+					//全开
+					var img_2 = document.createElement("img");
+					img_2.setAttribute("src","imgs/strip_off.png");
+					img_2.setAttribute("class","strip_switch_off");
+					var img_ = document.createElement("img");
+					img_.setAttribute("class","base");
+					img_.setAttribute("src","imgs/base.png");
+				div.appendChild(div_in);
+				div.appendChild(img_);
+				div.appendChild(img_1);
+				div.appendChild(img_2);
 			break;
 		}
 		div_out.appendChild(div);
@@ -327,6 +485,7 @@ function showExtend(Str){
 		$('#'+Str).hide();
 	});
 }
+
 //恢复出厂设置
 function HandleOnClose() {
 	  var close = confirm("确定恢复出厂设置?");
@@ -343,6 +502,7 @@ function HandleOnClose() {
 	  }
 	  return message;
 }
+
 //警告
 function AlertDeviceState(){
 	$('.name').html("设备离线");
@@ -367,12 +527,10 @@ function SendData(Str) {
 
 //接收数据
 function RecieveToggle(Str){
-	if(Str){
-		$("#No"+currentIndex).attr('src',"imgs/plug.png"); 
-		state = true;
-	}else{
-		$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
-		state = false;
+	if(Str=="1"){
+		$(".plug").attr('src',"imgs/plug.png"); 
+	}else if(Str=="0"){
+		$(".plug").attr('src',"imgs/plug_off.png"); 
 	}
 }
 
@@ -423,24 +581,40 @@ function settingClick(e){
 //彩灯颜色滚动条和选择块的显示控制
 function lampBottomDisplay(){
 	//若当前为彩灯，则显示颜色滚动条和颜色选择块
-	console.log("type_l="+type);
-	if(type=="W05"){
-		$('#bright-div,#color-picker').show();
-		$('.div_img_setting_first').hide();
-		setTimeout("delayShow()",300);
-		$('.singleFlash').show();
-		$('.sevenFlash').show();
-		$('.shake').show();
-		$('.power_protect').hide();
-		SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLNODE=1\r\n'));
-	}else if(type=="0"){
-		$('#bright-div,#color-picker').hide();
-		$('.div_img_setting_first').show();
-		$('.canvas-div').hide();
-		$('.sevenFlash').hide();
-		$('.singleFlash').hide();
-		$('.shake').hide();
-		$('.power_protect').show();
+	switch(type){
+		case "0":
+			$('#bright-div,#color-picker').hide();
+			$('.div_img_setting_first').show();
+			$('.canvas-div').hide();
+			$('.sevenFlash').hide();
+			$('.singleFlash').hide();
+			$('.shake').hide();
+			$('.power_protect').show();
+			$('.color-picker').hide();
+			$('.bright-div').hide();
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+NODE=1\r\n'));
+		break;
+		case "W04":
+			$('.div_img_setting_first').hide();
+			$('.canvas-div').hide();
+			$('.sevenFlash').hide();
+			$('.singleFlash').hide();
+			$('.shake').hide();
+			$('.color-picker').hide();
+			$('.bright-div').hide();
+			$('.power_protect').show();
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+MSNODE=1\r\n'));
+		break;
+		case "W05":
+			$('#bright-div,#color-picker').show();
+			$('.div_img_setting_first').hide();
+			setTimeout("delayShow()",300);
+			$('.singleFlash').show();
+			$('.sevenFlash').show();
+			$('.shake').show();
+			$('.power_protect').hide();
+			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLNODE=1\r\n'));
+		break;
 	}
 }
 

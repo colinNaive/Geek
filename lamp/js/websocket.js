@@ -22,7 +22,7 @@ function connectWebsocket() {
 					num++;
 					break;	
 			}
-			//读取状态节点
+			//彩灯读取状态节点
 			if(output_text.indexOf("+CLNODE:#1,")!=-1){
 				//有效信息起点
 				var s=output_text.indexOf("+CLNODE:#1,")+11;
@@ -37,7 +37,7 @@ function connectWebsocket() {
 				color=rgb;
 				switchFlag=onOff;
 			}
-			//单色闪烁与七色闪烁的响应
+			//彩灯单色闪烁与七色闪烁的响应
 			if(output_text.indexOf("+CLMODE:#1,")!=-1){
 				//有效信息起点
 				var s=output_text.indexOf("+CLMODE:#1,")+11;
@@ -49,7 +49,7 @@ function connectWebsocket() {
 				color=rgb;
 				switchDisplay("1");
 			}
-			//设置颜色的响应
+			//彩灯设置颜色的响应
 			if(output_text.indexOf("+CLRGB:#1,")!=-1){
 				//有效信息起点
 				var s=output_text.indexOf("+CLRGB:#1,")+10;
@@ -59,7 +59,7 @@ function connectWebsocket() {
 				console.log("color_feedback="+color+";"+"light_feedback="+light);
 				switchDisplay("1");
 			}
-			//设置延时的响应
+			//彩灯设置延时的响应
 			if(output_text.indexOf("+CLTIMESHUT:#1,")!=-1){
 				var x=output_text.indexOf("+CLTIMESHUT:#1,")+15;
 				var temp=""+output_text.substring(x,output_text.size).trimRight();
@@ -84,13 +84,53 @@ function connectWebsocket() {
 					}
 				}
 			}
+			//插排的开关状态显示
+			if(output_text.indexOf("+MSNODE:#2,")!=-1){
+				//有效信息起点
+				var s=output_text.indexOf("+MSNODE:#2,")+11;
+				console.log("s="+s);
+				var up=output_text.charAt(s);
+				var down=output_text.charAt(s+2);
+				console.log("updown="+output_text);
+				console.log("up="+up+";"+"down="+down);
+				switchStripState(up,down);
+				
+			}
+			console.log("chapaiqianiqan");
+			//插排设置延时的响应
+			if(output_text.indexOf("+MSTIMESHUT:#")!=-1){
+				var x=output_text.indexOf("+MSTIMESHUT:#")+15;
+				var temp=""+output_text.substring(x,output_text.size).trimRight();
+				temp = temp.split(",");
+				if(type=="W04"){
+					if(temp[0]==0){
+						$('.extend_time').show();
+						$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后关闭');
+						$('.box').hide();
+						$('.box_input').hide();
+					}
+					if(temp[0]==1){
+						$('.extend_time').show();
+						$('.extend_time_text').html('延时'+temp[1]+':'+padLeft(temp[2])+'后开启');
+						$('.box').hide();
+						$('.box_input').hide();
+					}
+					if(temp[0]==2){
+						$('.box').show();
+						$('.box_input').show();
+						$('.extend_time').hide();
+					}
+				}
+			}
+			//所有
 			if(output_text.indexOf("NOLINK")!=-1){
 				$('.name').html("设备离线");
 				$('.name').css('color','red');
 				canClick=false;
 				$("#No"+currentIndex).attr('src',"imgs/plug_off.png"); 
-				switchDisplay("2");
+				switchDisplay("2");//反馈开关状态
 			}
+			//插座
 			if(output_text.indexOf("+NODE:")!=-1){
 				if(sessionStorage.getItem("note")){
 					note=sessionStorage.getItem("note");
@@ -98,7 +138,11 @@ function connectWebsocket() {
 				$('.name').html(note);
 				$('.name').css('color','#00D1DA');
 				canClick=true;
+				var s=output_text.indexOf("+NODE:#1,")+9;
+				var plugSwitch=output_text.charAt(s);
+				RecieveToggle(plugSwitch);//插座反馈开关状态
 			}
+			//插座
 			if(output_text.indexOf("+EDITPWD:")!=-1){
 				var x=output_text.indexOf("+EDITPWD:")+9;
 				var temp="" + output_text.substring(x,output_text.size).trimRight();

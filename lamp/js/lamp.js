@@ -55,6 +55,10 @@ setLiClick();
 
 //彩灯单色闪烁点击
 $("#singleFlash").click(function(){
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	//显示单色闪烁设置弹窗
 	showExtend("singleAlert");
 	//初始亮度与频率
@@ -84,6 +88,10 @@ $('#single_finish').click(function(){
 
 //七色闪烁点击
 $("#sevenFlash").click(function(){
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	//显示单色闪烁设置弹窗
 	showExtend("sevenAlert");
 	//初始亮度与频率
@@ -108,6 +116,10 @@ var last_update = 0;
 var x = y = z = last_x = last_y = last_z = 0;
 $('#shake').click(function(e){
 	e.stopPropagation();
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	$("#shake").attr('src',"imgs/shake.png"); 
 	initShake();
 });
@@ -363,7 +375,7 @@ function centerClick(){
 }
 
 function switchDisplay(switchFlag){
-	console.log("switchDisplay="+switchDisplay);
+	console.log("switchDisplay="+switchFlag);
 	switch(switchFlag){
 		case "1":
 			$(".switch-lamp").attr('src',"imgs/lampOn.png"); 

@@ -28,7 +28,10 @@
 			if($result['device'] == ""){
 				$type[$index] = '0';
 			}
-		$index++;
+			if(strstr($mac[$index],"549A11C0017F")){
+				$type[$index] = 'W04';
+			}
+			$index++;
 	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -67,6 +70,8 @@
 	var type_ = <?php echo json_encode($type);?>;
 	var currentIndex = <?php echo $sequence ?>;
 	var openid = '<?php echo $openid ?>';
+	console.log("mac___="+mac_);
+	console.log("type___="+type_);
 </script>
 </head>
 
