@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>活动论坛</title>
+<link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+
+<header>
+<h1><%= title %></h1>
+</header>
+
+<!-- input class="sbar" name="q" title="Search" type="text"/> <button type="Submit">Search</button> -->
+<ul id="nav">
+<span><a title="约吧看帖" href="/">讨论组</a></span>
+<span><a title="成员列表〃" href="/members">成员</a></span>
+<span><a title="发帖" href="/post">发帖</a></span>
+ 
+<!-- <%if (false){ %><% } %> -->
+<span><a title="归档" href="/archive">归档</a></span>
+<span><a title="标签" href="/tags">标签</a></span>
+<% if (user) { %>
+  <span><a title="上传" href="/upload">上传</a></span>
+  <span><a title="退出" href="/logout">退出</a></span>
+<% } else { %>
+  <span><a title="登录" href="/login">登录</a></span>
+  <span><a title="注册" href="/reg">注册</a></span>
+<% } %>
+
+<span><form action="/search" method="GET"><input type="text" name="keyword" placeholder="搜索" class="search" /></form></span>
+</ul>
+<nav></nav>
+
+<article>
+
+<% if (success) { %>
+  <div><%= success %></div>
+<% } %>
+<% if (error) { %>
+  <div><%= error %> </div>
+<% } %>

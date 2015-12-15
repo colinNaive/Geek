@@ -1,0 +1,12 @@
+<%- include header %>
+
+<ul class="members">
+	<% posts.forEach(function (post, index) { %>
+
+ 	<li><a href="/u/<%= post.name %>/">  <%= post.name %>			        	<%= post.email %></a></li>
+  
+	<% }) %>
+
+</ul>
+
+<%- include footer %>
