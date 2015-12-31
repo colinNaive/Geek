@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>活动详情</title>
+<link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+
+<header>
+<!-- 页面头部 -->
+<div class="page_header">
+	活动详情
+</div>
+<h1 class="border_"></h1>
+<!-- 活动名称 -->
+<ul class="topTitle2">
+	<span class="activity_name"><%= activityName %></span>
+	<span class="undo">取消参与</span>
+</ul>
+<!-- 时间地点 -->
+<ul class="topT">
+	<li class="lli"><%= activityTime %></li>
+	<li class="lli"><%= activityAdr %></li>
+</ul>
+<h1 class="border_"></h1>
+<!-- 参与讨论人员 -->
+<ul class="member">参与讨论人员：
+	<% group.forEach(function (member) { %>
+ 	<a><%= member %></a>
+	<% }) %>
+</ul>
+</header>
+
+<ul id="nav">
+<!-- <span><form action="/search" method="GET"><input type="text" name="keyword" placeholder="搜索" class="search" /></form></span> -->
+</ul>
+<nav></nav>
+
+<article>
+

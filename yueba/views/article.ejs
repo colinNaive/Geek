@@ -1,8 +1,8 @@
-<%- include header %>
+<%- include header2 %>
 <p>
   <% if (user && (user.name == post.name)) { %>
-    <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">编辑</a></span>
-    <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">删除</a></span>
+   <!--  <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">编辑</a></span>
+    <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">删除</a></span> -->
   <% } %>
   <% var flag = 1 %>
   <% if (user && (user.name != post.name)) { %>
@@ -23,29 +23,17 @@
     <span><a class="edit" href="/reprint/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">转载</a></span>
   <% } %>
 </p>
-<p class="info">
-  作者：<a href="/u/<%= post.name %>"><%= post.name %></a> | 
-  日期：<%= post.time.minute %> | 
-  标签：
-  <% post.tags.forEach(function (tag, index) { %>
-    <% if (tag) { %>
-      <a class="tag" href="/tags/<%= tag %>"><%= tag %></a>
-    <% } %>
-  <% }) %>
-  <% if (post.reprint_info.reprint_from) { %>
-    <br><a href="/u/<%= post.reprint_info.reprint_from.name %>/<%= post.reprint_info.reprint_from.day %>/<%= post.reprint_info.reprint_from.title %>">原文链接</a>
-  <% } %>
-</p>
-<p><%- post.post %></p>
-<p class="info">
-  阅读：<%= post.pv %> | 
-  评论：<%= post.comments.length %> | 
-  转载：
-  <% if (post.reprint_info.reprint_to) { %>
-    <%= post.reprint_info.reprint_to.length %>
-  <% } else { %>
-    <%= 0 %>
-  <% } %>
-</p>
+<div style="overflow:hidden;height:40px;">
+        <!-- 作者头像 -->
+        <img class="author_icon" src="/images/lufei.jpg">
+        <div class="author_info">
+          <!-- 作者 -->
+          <p class="author" href="/u/<%= post.name %>"><%= post.name %></p>
+          <!-- 时间 -->
+          <p class="time"><%= post.time.minute %></p> 
+        </div>
+      </div>
+<!-- 帖子内容 -->
+<div class="post article_post"><%- post.post %></div>
 <%- include comment %>
 <%- include footer %>

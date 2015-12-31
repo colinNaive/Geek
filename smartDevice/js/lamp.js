@@ -6,7 +6,7 @@ var slideBtn=S("#slide-btn");
 var slidePro=S("#slide-progress");
 var total=S(".header");
 var moveCircle;//手指跟随小圆
-var switchCircle;//中间开关圆
+var switchCircle;//中间开关圆data-value
 var light="64";
 var freq=03;
 //单色滚动条
@@ -55,6 +55,10 @@ setLiClick();
 
 //彩灯单色闪烁点击
 $("#singleFlash").click(function(){
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	//显示单色闪烁设置弹窗
 	showExtend("singleAlert");
 	//初始亮度与频率
@@ -84,6 +88,10 @@ $('#single_finish').click(function(){
 
 //七色闪烁点击
 $("#sevenFlash").click(function(){
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	//显示单色闪烁设置弹窗
 	showExtend("sevenAlert");
 	//初始亮度与频率
@@ -108,6 +116,10 @@ var last_update = 0;
 var x = y = z = last_x = last_y = last_z = 0;
 $('#shake').click(function(e){
 	e.stopPropagation();
+	if(!canClick){
+		alert("该设备离线");
+		return;
+	}
 	$("#shake").attr('src',"imgs/shake.png"); 
 	initShake();
 });
@@ -182,7 +194,7 @@ function moveLightSingle(e){
 			timerFlagBarSingleSpeed=false;
 			console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
-		},500);
+		},100);
 	}
 }
 
@@ -208,7 +220,7 @@ function moveLightSingleLight(e){
 			timerFlagBarSingleLight=false;
 			console.log("singlefg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',01,'+flashFreq+'\r\n'));
-		},500);
+		},100);
 	}
 }
 
@@ -251,7 +263,7 @@ function moveLightSeven(e){
 			timerFlagBarSevenSpeed=false;
 			console.log("singlefl="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n'));
-		},500);
+		},100);
 	}
 }
 
@@ -293,7 +305,7 @@ function moveLightSevenLight(e){
 			timerFlagBarSevenLight=false;
 			console.log("sevenfg="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLMODE=1,'+color+flashLight+',02,'+flashFreq+'\r\n'));
-		},500);
+		},100);
 	}
 }
 
@@ -394,7 +406,7 @@ function moveLight(e){
 			timerFlagNormalBar=false;
 			console.log("normalcon="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light+'\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color+light+'\r\n'));
-		},500);
+		},100);
 	}
 }
 
@@ -417,8 +429,9 @@ function changeColor(e){
 		timerFlagCircle=true;
 		setTimeout(function(){
 			timerFlagCircle=false;
+			console.log("changeColor="+'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color_rgb+'64\r\n');
 			SendData(Encrypt('CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color_rgb+'64\r\n'));
-		},500);
+		},100);
 	}
 //  timerFlagCircle=delaySend(timerFlagCircle,'CONTROL ' + mac + ' P ' + passWord + ' AT+CLRGB=1,'+color_rgb+'64\r\n');
 }

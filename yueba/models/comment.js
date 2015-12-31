@@ -1,9 +1,10 @@
 var mongodb = require('./db');
 
-function Comment(name, day, title, comment) {
+function Comment(activityId, name, minute, comment) {
+  this.activityId=activityId;
   this.name = name;
-  this.day = day;
-  this.title = title;
+  this.minute = minute;
+  // this.title = title;
   this.comment = comment;
 }
 
@@ -12,9 +13,10 @@ module.exports = Comment;
 //存储一条留言信息
 Comment.prototype.save = function(callback) {
   var name = this.name,
-      day = this.day,
-      title = this.title,
-      comment = this.comment;
+      minute = this.minute,
+      // title = this.title,
+      comment = this.comment,
+      activityId = this.activityId;
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -26,13 +28,15 @@ Comment.prototype.save = function(callback) {
         mongodb.close();
         return callback(err);
       }
+      console.log("comment_acitivityId="+activityId);
       //通过用户名、时间及标题查找文档，并把一条留言对象添加到该文档的 comments 数组里
       collection.update({
-        "name": name,
-        "time.day": day,
-        "title": title
+        "activityId":activityId,
+        "topics.name": name,
+        "topics.time.minute": minute,
+        // "topics.title": title
       }, {
-        $push: {"comments": comment}
+        $push: {"topics.$.comments": comment}
       } , function (err) {
           mongodb.close();
           if (err) {

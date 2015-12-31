@@ -1,10 +1,15 @@
 <br />
-<div>
+<div class="paging">
+	<%console.log("isfirstpagewai")%>
+	<%console.log("first="+isFirstPage+"last="+isLastPage)%>
   <% if (!isFirstPage) { %>
+    <%console.log("isfirstpage")%>
     <span class="prepage"><a title="上一页" href="?p=<%= page-1 %>">上一页</a></span>
   <% } %>
-
+  <%console.log("isfirstpagewai2")%>
   <% if (!isLastPage) { %>
+  <%console.log("isfirstpagewai0")%>
     <span class="nextpage"><a title="下一页" href="?p=<%= page+1 %>">下一页</a></span>
   <% } %>
+  <%console.log("isfirstpagewai3")%>
 </div>
