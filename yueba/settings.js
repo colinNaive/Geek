@@ -3,6 +3,6 @@ module.exports = {
   db: 'blog', 
   host: 'localhost',
   port: 27017,
-  user:"colin",
+  user:"qinlu",
   psw:"yueba"
 };

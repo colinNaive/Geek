@@ -1,11 +1,12 @@
 /* inspired by http://yihui.name/cn/ */
 *{padding:0;margin:0;}
-body{width:100%;height:100%;font-size:14px;font-family:"Microsoft YaHei";color: #666}
-header{padding:.5em 0;border-bottom:1px solid #ccc;}
+body{width:100%;height:100%;font-size:14px;font-family:"Microsoft YaHei";color:#60606C;}
+/*header{border-bottom:1px solid #ccc;}*/
 nav{float:left;font-family:"Microsoft YaHei";font-size:1.1em;text-transform:uppercase;margin-left:-12em;width:9em;text-align:right;}
 nav a{display:block;text-decoration:none;padding:.7em 1em;color:#000;}
 nav a:hover{background-color:#f00;color:#f9f9f9;-webkit-transition:color .2s linear;}
-article{font-size:16px;padding-top:.5em;}
+article{font-size:16px;}
+.article2 {padding-top:.5em;}
 article a{color:#d00;text-decoration:none;}
 article a:hover{color:#333;text-decoration:underline;}
 .edit{margin:3px;padding:2px 5px;border-radius:3px;background-color:#f3f3f3;color:#333;font-size:13px;}
@@ -23,33 +24,85 @@ article a:hover{color:#333;text-decoration:underline;}
 .r_head{float:right;margin-top:-2.5em;box-shadow:0px 1px 4px #888;}
 /*******************************以下为我自己的样式表**********************************************/
 /*item部分*/
-.item{border-bottom:1px solid #ddd;}
-.info_header{overflow: hidden;}
-.author_info{float: left;height: 20px;margin-left: 5px}
-.author_info .author{color: #00D1DA;font-size: 10px}
-.author_info .time{color:#999;font-size: 10px}
-.post{margin:5px 10px 5px 30px;font-size: 18px;}
-.more_comments{margin: 1px 10px 1px 0;width: 100%;text-align: right;color: #00D1DA;padding-right: 10px}
-.one_comment{margin: 1px 0;margin-left: 30px;}
-.icon{float: right;width: 20px;height: 20px;margin-right: 10px;margin-top: 5px}
-.author_icon{float: left;margin-left: 30px;width: 20px;height: 20px;margin-top: 10px;margin-bottom: 10px}
+.item{border-top:1px solid #ddd;width:100%;overflow: hidden;}
+.info_header{overflow: hidden;height: 51px}
+.header_inner{float:left;overflow:hidden;height:36px;margin-top: 15px}
+.author_info{float: left;height: 36px;margin-left: 5px;margin-top: 3px}
+.author_info .author{color: #3FA2EE;font-size: 14px;;height: 14px}
+.author_info .time{color:#CECECE;font-size: 12px;height: 12px;margin-top: 4px}
+.post{margin:17px 10px 5px 47px;font-size: 15px;color: #2F2F39;word-wrap:break-word; overflow:hidden;}
+.right_border {background-color:#ddd;height:1px;margin-left:47px;margin-right:0}
+.more_comments{width:30%;float:right; text-align: right;color: #3FA3EE;font-size: 12px; padding-right: 10px;height: 12px;line-height: 12px;margin-bottom: 15px}
+.one_comment{margin: 1px 0;margin-left: 47px;font-size:13px;}
+.icon{float: right;width: auto;height: 14px;margin-right: 10px;margin-top: 18px;margin-left: 10px}
+.author_icon{float: left;width: 30px;height: 30px;margin-top: 0px;margin-bottom: 6px;margin-right: 2px}
+._border {border-radius:100%; border:0.1px solid white;}
+.first_comment{margin-top: 15px;}
+.other_commnet, .article_cmts{margin-top: 8px;}
+.comment_author {color: #3FA3EE}
+.comment_content {color: #60606C}
 /*顶部*/
 #nav{border-bottom:1px solid #ddd}
-.page_header{text-align: center;font-size: 25px;border-bottom: 1px solid #ddd;}
-.border_{height: 20px;width: 100%;background: #eee}
-.topTitle2{border-top: 1px solid #ddd;border-bottom: 1px solid #ddd;height: 45px;}
-.activity_name{height: 45px;line-height: 45px;text-align: center;margin-left: 30px;font-size: 25px}
-.undo{height: 45px; float: right; line-height: 45px; text-align: center;margin-right: 10px;font-size: 14px}
-.lli{height: 40px;line-height: 40px;font-size: 14px;margin-left: 30px;list-style: none;}
+.ml {margin-left: 15px;}
+.page_header{text-align: center;width:100%;font-size: 20px;border-bottom: 1px solid #ddd;height: 50px;line-height: 50px}
+.border_{height: 15px;width: 100%;background: #eee}
+.border_add {height: 20px}
+.topTitle2{border-top: 1px solid #ddd;border-bottom: 1px solid #ddd;height: 45px;overflow: hidden;}
+.activity_name{height: 45px;line-height: 45px;text-align:left;font-size: 15px;color:#60606C;margin-right: 20px;display: block;width: 50%;float: left;} 
+.undo{height: 40px; float: right; line-height: 45px; text-align: center|right;margin-right: 10px;font-size: 15px;color:#60606C;display: block;float: right;}
+.lli{height: 26px;line-height: 26px;font-size: 14px;list-style: none;color:#60606C;margin-top: 15px}
+.lli2{margin-bottom: 15px}
 .topT{border-bottom: 1px solid #ddd;}
-.member{border-top: 1px solid #ddd;height: 50px}
-.icon_header{float:left;margin-left: 30px}
+.member{border-top: 1px solid #ddd;/*height: 58px;*/overflow: hidden;vertical-align: middle;padding-left: 15px;font-size: 14px}
+.icon_header{float:left;margin-top: 15px;margin-bottom: 15px;width: auto;height: 20px}
+.before_icon_tp2{float: left;height:22px;width: 22px;margin-right: 10px;display: block;margin-bottom: 2px;margin-top: 2px}
+.before_icon_bt1{margin-top: 9px;margin-bottom: 9px;width: 28px;height:28px;}
+.member_img {width: 22px;height: 22px;margin-top: 12px;margin-bottom: 12px}
+.member .text {line-height: 46px;}
+.header_text {margin-left: auto;margin-right: auto;width: 110px;}
+.rest_hide {overflow: hidden;white-space: nowrap; text-overflow:ellipsis}
 /*底部*/
-.paging{border-top: 1px solid #ddd;border-bottom: 1px solid #ddd;overflow: hidden;margin-bottom: 40px}
+.paging{overflow: hidden;margin-bottom: 40px;text-align: center;}
+.paging{height: 40px;}
 /*这里特么的问题 怎么解决？*/
 footer{position: fixed;bottom:0px;left:0;width:100%;height:40px;background:#ddd;text-align: center;}
 form{width: 100%;height: 100%}
 footer .fatie, footer .fatie_button{width: 80%;height: 80%;}
 footer .fatie_button{width:15%;height: 100%;}
+/*发帖*/
+.fl{ float:left; display:inline;zoom:1;}
+.fr{ float:right; display:inline; zoom:1;}
+.sub_bar{ width:100%; height:50px; background:#ddd; overflow:hidden;zoom:1; position:fixed; left:0; bottom:0;}
+.sub_input{width:79%; position:relative;zoom:1; margin:0 2%;}
+.sub_input input{ border:none; height:30px; background:white; width:95%; margin-top:10px; color:#60606C; padding-left:10px;}
+.sub_send{font-size:16px; height:50px; line-height:50px; width:15%; text-align:center;background:#ddd;margin-right: 2%}
+.sub_send button{width: 100%;height:40px;margin-top:5px;margin-bottom:5px;border:none;border-radius:5px;background: white;font-size: 16px;color: #2F2F39}
 /*第二页*/
-.article_post{margin-left: 55px}
+.article_post{margin-left: 55px;margin-bottom: 20px}
+.back_icon {margin-left: 15px}
+/*点赞评论数改ui*/
+.pic_active{ overflow:hidden;zoom:1;margin-top: 15px}
+.praise{ color:#2F2F39; font-size:12px; height:30px; line-height:30px; margin-top:0px;text-align: center;}
+.praise img{width:auto; height:14px; margin-right:5px;float:left; display:inline; margin-top:8px;margin-top:8px;}
+.comment{ color:#2F2F39; font-size:12px;text-align: center;  height:30px; line-height:30px; text-align: center; margin-left:10px;margin-top:0px;margin-right: 10px}
+.comment img{width:auto; height:14px; margin-right:5px; float:left; display:inline; margin-top:8px;margin-top:8px;}
+.mtop {margin-top: 0px}
+/*点击时间弹窗*/
+.alert {border-radius: 12px;width:80%;left:10%;background:#FAFAFA;z-index:1000;position:absolute;display: none}  
+.time_input{
+	font-size:15px;
+	vertical-align:middle;
+	text-align:center;
+	width: 40px;
+	height: 22px;
+	color:grey;
+	border-radius: 10px;
+	border-color: #A5A5A5;
+}
+.box_input{width: 100%;text-align: center;font-size: 22px;margin-bottom: 10px;margin-top: 10px}
+.diag_header{height: 40px;background-color: #00D1DA;width: 100%;border-radius: 10px 10px 0 0;text-align: center;font-size: 22px;color:white;line-height:40px;}
+.diag_content{height: 80px;}
+#alertBg{
+	display: none; background-color: rgba(0, 0, 0, 0.3); width: 100%;height: 100%;position: absolute;top: 0;left: 0;z-index: 500;
+}
+.ok {width: 50px;height: 25px;}

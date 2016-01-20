@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
 <title>活动详情</title>
 <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
@@ -11,32 +12,37 @@
 <header>
 <!-- 页面头部 -->
 <div class="page_header">
-	活动详情
+	<img src="/images/back.png" class="icon icon_header ml" onClick="window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd82904e0231d38d9&redirect_uri=http://www.tces1.party/demo/main.php&response_type=code&scope=snsapi_userinfo&state=2&connect_redirect=1#wechat_redirect'">
+	<div class="header_text">活动详情</div>
 </div>
-<h1 class="border_"></h1>
+<h1 class="border_ "></h1>
 <!-- 活动名称 -->
 <ul class="topTitle2">
-	<span class="activity_name"><%= activityName %></span>
-	<span class="undo">取消参与</span>
+	<span class="activity_name rest_hide ml"><%= activity.activity_name %></span>
+	<span class="undo"><!-- 取消参与 --></span>
 </ul>
 <!-- 时间地点 -->
 <ul class="topT">
-	<li class="lli"><%= activityTime %></li>
-	<li class="lli"><%= activityAdr %></li>
+	<%if( activity.end == true && activity.sponsor == user.user_id) {%>
+		<%console.log("kedianji")%>
+		<li class="lli rest_hide ml" onclick="javascript:changeTime();"><img src="/images/time.png" class="before_icon_tp2" > <span id="act_date"><%= activity.result_date %></span><span id="act_time"><%= activity.result_time %></span>
+	<%}else {%>
+		<li class="lli rest_hide ml"><img src="/images/time.png" class="before_icon_tp2"> <span id="act_date"><%= activity.result_date %></span> <span id="act_time"><%= activity.result_time %></span> 
+	<%}%>
+	</li>
+	<li class="lli  lli2 rest_hide ml"><img src="/images/adr.png" class="before_icon_tp2"> <%= activity.location %></li>
 </ul>
-<h1 class="border_"></h1>
+<h1 class="border_ border_add"></h1>
 <!-- 参与讨论人员 -->
-<ul class="member">参与讨论人员：
+<div class="member">
+	<img src="/images/members.png" class="before_icon_tp2 before_icon_bt1 member_img">
+	<div style="float:left" class="text">参与讨论人员(<%= group.length%>)：</div>
 	<% group.forEach(function (member) { %>
- 	<a><%= member %></a>
+ 		<img src="<%= member.headimgurl %>" class="before_icon_tp2 before_icon_bt1 _border head_control">
 	<% }) %>
-</ul>
+	<div style="float:left;line-height:46px" class="dot">...</div>
+</div>
 </header>
 
-<ul id="nav">
-<!-- <span><form action="/search" method="GET"><input type="text" name="keyword" placeholder="搜索" class="search" /></form></span> -->
-</ul>
-<nav></nav>
-
-<article>
+<article id = "bodyContent">
 

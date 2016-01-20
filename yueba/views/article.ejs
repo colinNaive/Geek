@@ -1,31 +1,7 @@
 <%- include header2 %>
-<p>
-  <% if (user && (user.name == post.name)) { %>
-   <!--  <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">编辑</a></span>
-    <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">删除</a></span> -->
-  <% } %>
-  <% var flag = 1 %>
-  <% if (user && (user.name != post.name)) { %>
-    <% if ((post.reprint_info.reprint_from != undefined) && (user.name == post.reprint_info.reprint_from.name)) { %>
-      <% flag = 0 %>
-    <% } %>
-    <% if ((post.reprint_info.reprint_to != undefined)) { %>
-      <% post.reprint_info.reprint_to.forEach(function (reprint_to, index) { %>
-        <% if (user.name == reprint_to.name) { %>
-          <% flag = 0 %>
-        <% } %>
-      <% }) %>
-    <% } %>
-  <% } else { %>
-    <% flag = 0 %>
-  <% } %>
-  <% if (flag) { %>
-    <span><a class="edit" href="/reprint/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">转载</a></span>
-  <% } %>
-</p>
 <div style="overflow:hidden;height:40px;">
         <!-- 作者头像 -->
-        <img class="author_icon" src="/images/lufei.jpg">
+        <img class="author_icon _border ml" src="<%= post.head %>">
         <div class="author_info">
           <!-- 作者 -->
           <p class="author" href="/u/<%= post.name %>"><%= post.name %></p>
@@ -35,5 +11,18 @@
       </div>
 <!-- 帖子内容 -->
 <div class="post article_post"><%- post.post %></div>
+<h2 class="right_border"></h2>
+<!-- 点赞和评论数 -->
+<div class="pic_active mtop">
+	<div class="comment fr">
+		<img src="/images/comment.png">
+		<span><%= post.comments.length %></span>
+	</div>
+	<div class="praise fr">
+		<img src="/images/zan_before.png">
+		<span><%= post.zan.length %></span>
+	</div>
+</div>
+<h2 class="right_border"></h2>
 <%- include comment %>
-<%- include footer %>
+<%- include footer2 %>

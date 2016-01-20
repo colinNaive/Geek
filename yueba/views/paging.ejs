@@ -1,15 +1,4 @@
 <br />
-<div class="paging">
-	<%console.log("isfirstpagewai")%>
-	<%console.log("first="+isFirstPage+"last="+isLastPage)%>
-  <% if (!isFirstPage) { %>
-    <%console.log("isfirstpage")%>
-    <span class="prepage"><a title="上一页" href="?p=<%= page-1 %>">上一页</a></span>
-  <% } %>
-  <%console.log("isfirstpagewai2")%>
-  <% if (!isLastPage) { %>
-  <%console.log("isfirstpagewai0")%>
-    <span class="nextpage"><a title="下一页" href="?p=<%= page+1 %>">下一页</a></span>
-  <% } %>
-  <%console.log("isfirstpagewai3")%>
+<div class="paging" id="page" >
+  <img style="margin:5px 5px 5px 30%;width:30px;float:left" src="/images/loading.gif" id = "loading"/><div style="height:40px;line-height: 40px;text_align:center;width:50%;margin-left:auto;margin-right:auto" id= "loading_text">信息正在加载中...</div></div>
 </div>

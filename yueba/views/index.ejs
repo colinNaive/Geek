@@ -2,47 +2,80 @@
 <% posts.forEach(function (post, index) { %>
   <div class="item">
     <div class="info_header">
-      <div style="float:left;overflow:hidden;height:40px;">
+      <div class="header_inner">
         <!-- 作者头像 -->
-        <img class="author_icon" src="/images/lufei.jpg">
+        <img class="author_icon _border ml" src="<%= post.head %>">
         <div class="author_info">
           <!-- 作者 -->
+          <%console.log("fatie_name==" + post.name)%>
           <p class="author" href="/u/<%= post.name %>"><%= post.name %></p>
           <!-- 时间 -->
           <p class="time"><%= post.time.minute %></p> 
         </div>
+
       </div>
-      <!-- 评论图标 -->
-      <img class="icon" src="/images/lufei.jpg" onClick="window.location.href='/u/<%= activityId %>/<%= post.name %>/<%= post.time.minute %>'">
-      <%console.log("minute="+post.time.minute)%>
-      <!-- 点赞图标 -->
-      <img class="icon" src="/images/lufei.jpg">
+      
+      <div class="pic_active">
+        <!-- 评论图标 -->
+        <div class="comment fr">
+          <img src="/images/comment.png" onClick="window.location.href='/u/<%= activityId %>/<%= post.mix %>/<%= post.time.minute %>'">
+          <span class="com_count"><%= post.comments.length %></span>
+        </div>
+        <!-- 点赞图标 -->
+        <%console.log("data_user====" + post.user_id)%>
+        <div class="praise fr">
+          <%console.log("data_user====" + post.user_id)%>
+          <%for(var i=0;i<post.zan.length;i++){%>
+              <%if(post.zan[i]==user.user_id) {%>
+                  <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_after.png" clk="0">
+                  <%break%>
+              <%}else if(i==post.zan.length-1){%>
+                  <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_before.png" clk="1">
+            <%}%>
+          <%}%>
+          <%if(post.zan.length==0){%>
+              <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_before.png" clk="1">
+          <%}%>
+          <span class="zan_count"><%= post.zan.length %></span>
+        </div>
+      </div>
     </div>
     <!-- 帖子内容 -->
     <div class="post"><%- post.post %></div>
+    <h2 class="right_border"></h2>
     <!-- 显示一条评论 -->
-    <p class="one_comment"><% post.comments.forEach(function (comment, index) { %>
+    <div class="one_comment"><% post.comments.forEach(function (comment, index) { %>
         <% if (comment) { %>
-            <%if(index==0){%>
-              <%=comment.name%>：<%=comment.content%>
-            <%}%>
-        <% } %>
-      <% }) %></p>
+          <%  if(index==0){ %>
+              <p class="first_comment" style="margin-top:5px"><span class="comment_author"><%=comment.name%>:</span> 
+                <span class="comment_content"> <%=comment.content%></span> 
+              </p>
+          <%  }else if( index <= 7 ){ %>
+              <p class="other_comment" style="display:none;margin-top:5px">
+                <span class="comment_author"><%=comment.name%>:</span>
+                <span class="comment_content"> <%=comment.content%></span>
+              </p>
+            <%} %>
+        <%  } %>
+      <% }) %></div>
     <!-- 更多评论 -->
-    <p class="more_comments">
+    <p class="more_comments" data-href='/u/<%= activityId %>/<%= post.mix %>/<%= post.time.minute %>'>
       <%if(post.comments.length>1){%>
       更多
       <%=post.comments.length-1%>  
-      条回复
+      条回复   
       <%}%>
     </p>
   </div>
   <% }) %>
-<%- include paging %>
-<script>
-  var commentJson = '<%= commentJson %>';
-  var eleLength = '<%= eleLength %>';
-  var commentJsonArray = commentJson.split(",");
-  var eleLengthArray = eleLength.split(",");
-</script>
-<%- include footer %>
+  <div id="appendDom"></div>
+  <script>
+    var page = '<%= page %>';
+    var topicsLength = '<%= topicsLength%>';
+    var maxTime = '<%= maxTime%>';
+    var activityId ='<%= activityId %>';
+    page++;
+  </script>
+</article>
+<%- include paging%>
+<%- include footer1 %>

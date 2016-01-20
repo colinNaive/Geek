@@ -3,12 +3,63 @@ var mongodb = require('./db'),
     settings = require('../settings'),
     ObjectId = require('mongodb').ObjectID;
 
-function Post(name, head, post, activityId) {
+function Post(mix, name, head, user_id, post, activityId) {
+      this.mix = mix;
       this.activityId=activityId;
       this.name = name;
       this.head = head;
-      // this.title = title;
+      this.user_id = user_id;
       this.post = post;
+}
+
+// 对Date的扩展，将 Date 转化为指定格式的String
+// 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符， 
+// 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) 
+// 例子： 
+// (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423 
+// (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18 
+Date.prototype.Format = function (fmt) { //author: meizz 
+    var o = {
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+        "h+": this.getHours(), //小时 
+        "m+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+
+//修改result0的格式
+function changeString(time) {
+    var result="";
+    result += time.substring(0,4);
+    result += "年";
+    result += time.substring(4,6);
+    result += "月";
+    result += time.substring(6,8);
+    result += "日";
+    return result;
+};
+
+//确定具体时间
+function getconcrete(index) {
+  switch(index) {
+    case 0:
+      return "上午";
+    case 1:
+      return "中午";
+    case 2:
+      return "下午";
+    case 3:
+      return "晚上";
+    default:
+      return "出错";
+  }
 }
 
 module.exports = Post;
@@ -26,627 +77,421 @@ Post.prototype.save = function(callback) {
       date.getHours() + ":" + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ":" +
       (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
   }
+  var itime = date.getTime();
   //要存入数据库的文档
+  console.log("this.head===" + this.head);
   var topic = {
+      activityId: this.activityId,
       name: this.name,
       head: this.head,
+      itime:itime,
+      mix: this.mix,
+      user_id: this.user_id,
       time: time,
-      // title:this.title,
-      // tags: this.tags,
       post: this.post,
       comments: [],
       reprint_info: {},
-      pv: 0
+      sex: "",
+      pv: 0,
+      zan:[]
   };
-  var activityId=this.activityId;
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
+      console.log("err="+err);
       return callback(err);
     }
-    db.authenticate(settings.user, settings.psw, function(err, authdb) {
-       if (err) {
-          return callback(err);
-       }
-       //读取 posts 集合
-      db.collection('posts', function (err, collection) {
-        if (err) {
-          mongodb.close();
-          return callback(err);
-        }
-        console.log("activityId="+activityId);
-        //将文档插入 posts 中 activityid 下 topic 中
-        collection.update({
-          "activityId": activityId
-        }, {
-          $push: {"topics": topic},
-          $inc:{"count": 1}
-        } , function (err) {
+    //读取 posts 集合
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        console.log("insert_err_collection="+err);
+        mongodb.close();
+        return callback(err);
+      }else{
+        //将文档插入 posts下
+        collection.insert(topic, function (err) {
             mongodb.close();
             if (err) {
+              console.log("inesrt_err=" + err);
               return callback(err);
+            }else{
+              callback(null);
             }
-            callback(null);
         });
-      });
+      }
     });
+  });
+};
+
+//从 activity 表拉取 activity 基本信息：activityId、activityAdr、activityTime、activityName、group
+Post.getTen =function(activityId, maxTime, page, callback) {
+  mongodb.open(function(err, db) {
+    if(err) {
+      console.log("getTen_open_err==" + err);
+      return callback(err);
+    }else if(page != 1) {
+        console.log("jiejing_activity");
+        //参数1:activity_id;参数2:page;参数3:actvity表查询到的基本信息;
+        Post.getFromUser(db, activityId, maxTime, page, null, callback);
+    }else{
+      db.collection("activity",function(err, collection){
+        if (err) {
+          console.log("err_getTen_activity="+err);
+          mongodb.close();
+          return callback(err);
+        }else{
+           var objid=new ObjectId(activityId);
+           collection.findOne({"_id":objid}, function(err, doc){
+            if (err) {
+              console.log("err_getTen_activity_find="+err);
+              mongodb.close();
+              return callback(err);
+            }else {
+              console.log("activity_id=111=" + activityId);
+              if(doc) {}else {
+                console.log("err_get_activity_doc=" + err);
+                mongodb.close();
+                return callback(err);
+              }
+              //转换日期类型
+              if (doc.end && doc.result0 != "") {
+                  var result0 = doc.result0;
+                  console.log("result0=" + result0);
+                  var localTime = changeString(result0);
+                  console.log(" _activityTime = " + localTime);
+
+                  if(doc.time && doc.time!="") {
+                    var concreteTime = doc.time;
+                  }else {
+                    var checkList = doc.dateresult[result0].check;
+                    var index = 0,concreteTime = "";
+                    for(var i=0; i<checkList.length; i++) {
+                        if(checkList[i] >= checkList[index]) {
+                          index = i;
+                          console.log("checkListi=" + i);
+                          console.log("concreteTime=" + checkList[i]);
+                        }
+                    }
+                    console.log("concreteIndex=" + index);
+                    concreteTime = getconcrete(index);
+                  }
+              }else if(doc.result0 == "") {
+                  var localTime = "没有人参加~";
+                  var concreteTime = "";
+              }else {
+                  var localTime = "等待结果公布~";
+                  concreteTime = "";
+              }
+              doc.result_date = localTime;
+              doc.result_time = concreteTime;
+              console.log("mmmaxtime==" + maxTime);
+              //activity表查询完毕,去user表查询 
+              //参数1:activity_id;参数2:page;参数3:actvity表查询到的基本信息;
+              Post.getFromUser(db, activityId, maxTime, page, doc, callback);
+            }
+           });
+        }
+      });
+    }
+  });
+};
+
+//从user表查询user信息
+Post.getFromUser =function(_db, _activityId, maxTime, _page, actResult, callback) {
+  //user表获取user信息
+  _db.collection("user",function(err, collection) {
+      if (err) {
+        console.log("err_getHeader_from_user="+err);
+        mongodb.close();
+        return callback(err);
+      }else if(_page != 1) {
+          //活动1:活动id;参数2:page;参数3:活动表查询结果;参数4:user表查询出来的头像url数组;
+          console.log("jiejing_user");
+          Post.queryPosts(_db, _activityId, maxTime, _page, null, null, callback);
+      }else {
+         console.log("find_user_id_heads===" + actResult.group);
+         collection.find({
+            "user_id" : {"$in": actResult.group}
+         },{
+            "headimgurl":1,"_id":0,
+         }).toArray(function(err, heads) {
+            if(err) {
+              mongodb.close();
+              console.log("err_getUser_toArray=="+err);
+              return callback(err);
+            }else {
+                console.log("getUser_heads_doc==="+heads);
+                if (heads) {
+                  //活动1:活动id;参数2:page;参数3:活动表查询结果;参数4:user表查询出来的头像url数组;
+                  console.log("activity_id=222=" + _activityId);
+                  console.log("mmmaxtime===" + maxTime);
+                  Post.queryPosts(_db, _activityId, maxTime, _page, actResult, heads, callback);
+                }
+            }
+          });
+      }
   });
 };
 
 //一次获取十篇文章(直接从数据库里读取十个，无查询条件)
-Post.getTen = function(activityId, page, callback) {
-  //打开数据库
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    db.authenticate(settings.user, settings.psw, function(err, authdb) {
-       if (err) {
-          return callback(err);
-       }
-      //读取 posts 集合
-      db.collection('posts', function (err, collection) {
-          if (err) {
-            mongodb.close();
-            return callback(err);
-          }
-          var query = {};
-          if (activityId) {
-            query.activityId = activityId;
-          }
-          //使用 count 返回特定查询的文档数 total
-          //根据 query 对象查询，并跳过前 (page-1)*10 个结果，返回之后的 10 个结果
-          collection.findOne(query,{
-            "topics":{
-              $slice:[(page-1)*5,5]
-            }
-          },
-            function(err, doc){
-                if (err) {
-                  console.log("err="+err);
-                  mongodb.close();
-                  return callback(err);
-                }
-                if(doc){
-                    doc.topics.forEach(function (topic) {
-                      topic.post = markdown.toHTML(topic.post);
-                    }); 
-                    callback(null, doc, doc.count);
-                }else{
-                  //如果posts数据库什么都没有
-                  //初始化 posts 表，从 activity 表拉取 activity 基本信息：activityId、activityAdr、activityTime、activityName、group
-                  db.collection("activity",function(err, collection){
-                    if (err) {
-                      console.log("err="+err);
-                      mongodb.close();
-                      return callback(err);
-                    } 
-                    collection.findOne({"_id":ObjectId("567a41d3972b0ea51e414dcf")}, function(err, doc){
-                      if (err) {
-                        mongodb.close();
-                        return callback(err);
-                      }
-                      if (doc) {
-                        //activityId、activityAdr、activityTime、activityName、group
-                        var init = {
-                            activityId: activityId,
-                            activityAdr: doc.location,
-                            activityTime: doc.start_time,
-                            activityName: doc.activity_name,
-                            group: doc.group,
-                            topics: []
-                        };
-                        db.collection("posts",function(err, collection){
-                          if (err) {
-                            mongodb.close();
-                            return callback(err);
-                          }
-                          collection.insert(init,{
-                            safe:true
-                          },function(err,result){
-                            mongodb.close();
-                            if (err) {
-                              return callback(err);
-                            }
-                            callback(null, init, 0);
-                          });
-                        });
-                      }
-                    });
-                  });
-                }
-          });
-      });
-  });
+Post.queryPosts = function(_db, _activityId, maxTime, _page, _actResult, _heads, callback) {
+  //读取 posts 集合
+  _db.collection('posts', function(err, collection) {
+      if (err) {
+        console.log("err_getTen_collection="+err);
+        mongodb.close();
+        return callback(err);
+      }else{
+        var query = {};
+        if (_activityId) {
+          query.activityId = _activityId;
+        }
+        console.log("mmmaxtime====" + maxTime);
+        if (maxTime) {
+          console.log("zhelimeijinlai");
+          query.itime = {"$lte":maxTime};
+        }
+        console.log("activityidddd="+query.activityId);
+        //使用 count 返回特定查询的文档数 total
+        //根据 query 对象查询，并跳过前 (page-1)*10 个结果，返回之后的 10 个结果
+        collection.count(query,function(err, total){
+            console.log("totalmax==" + total);
+            collection.find(query,{
+                skip: (_page-1)*7,
+                limit: 7,
+            }).sort({
+                itime: -1
+            }).toArray(function(err, docs){
+                  if (err) {
+                    console.log("err_getTen_find="+err);
+                    mongodb.close();
+                    return callback(err);
+                  }else{
+                    console.log("dooccc=="+docs);
+                    if(docs){
+                        if (maxTime) {}else if(docs[0]) {
+                          maxTime = docs[0].itime;
+                          console.log("getMaxTime==" + maxTime);
+                        }
+                        console.log("mmmaxtime==" + maxTime);
+                        callback(null, docs, total, maxTime, _actResult, _heads);
+                    }
+                  }
+            });
+        });
+      }
   });
 };
 
-function writeObj(obj){ 
- var description = ""; 
- for(var i in obj){ 
-  var property=obj[i]; 
-  description+=i+" = "+property+"\n"; 
- } 
- console.log("result="+description); 
-} 
-
-//暂时没用到
-//初始化 posts 表，从 activity 表拉取 activity 基本信息：activityId、activityAdr、activityTime、activityName、group
-Post.initPosts = function(activityId){
-  db.collection("activity",function(err, collection){
-    if (err) {
-      mongodb.close();
-      return callback(err);
-    }
-    collection.findOne({"activityId":activityId}, function(err, doc){
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      if (doc) {
-        db.collection("posts",function(err, collection){
-          if (err) {
-            mongodb.close();
-            return callback(err);
-          }
-          collection.insert(doc,{
-            safe:true
-          },function(err,result){
-            mongodb.close();
-            if (err) {
-              return callback(err);
-            }
-            callback(null, result, total);
-          });
-        });
-      }
-    });
-  });
-}
 
 //获取一篇文章
-Post.getOne = function(name, minute, activityId, callback) {
+Post.getOne = function(mix, minute, activityId, callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
+      console.log("err="+err);
       return callback(err);
-    }
-    db.authenticate(settings.user, settings.psw, function(err, authdb) {
-       if (err) {
-          return callback(err);
-       }
+    }else {
         //读取 posts 集合
         db.collection('posts', function (err, collection) {
           if (err) {
+            console.log("err="+err);
             mongodb.close();
             return callback(err);
           }
+          console.log("activityId_getOne=="+activityId + ";user_id_getOne==" + mix + ";minute_getOne==" + minute);
           //根据用户名、发表日期及文章名进行查询
           collection.findOne({
             "activityId":activityId,
-            "topics.name": name,
-            "topics.time.minute": minute,
+            "mix": mix,
+            "time.minute": minute,
             // "topics.title": title
           }, function (err, doc) {
+            console.log("getOne_function=="+doc);
             if (err) {
+              console.log("err="+err);
               mongodb.close();
               return callback(err);
             }
             if (doc) {
+              console.log("getOne_doc=="+doc);
               //每访问 1 次，pv 值增加 1
               collection.update({
-                "topics.name": name,
-                "topics.time.minute": minute,
-                // "topics.title": title
+                "activityId": activityId,
+                "mix": mix,
+                "time.minute": minute,
               }, 
               {
-                $inc: {"topics.$.pv": 1}
+                $inc: {"pv": 1}
               }, 
               function (err) {
                 mongodb.close();
                 if (err) {
+                  console.log("err="+err);
                   return callback(err);
                 }
               });
-              var topicItem;
-              //解析 markdown 为 html
-              doc.topics.forEach(function(topic){
-                  if (topic.name==name&&topic.time.minute==minute/*&&topic.title==title*/) {
-                      topic.post=markdown.toHTML(topic.post);
-                      topic.comments.forEach(function (comment) {
-                        comment.content = markdown.toHTML(comment.content);
-                      });
-                      topicItem=topic;
-                  }
-              });
-              callback(null, topicItem);//返回查询的一篇文章
+              callback(null, doc);//返回查询的一篇文章
             }
           });
         });
-    });
-  });
-};
-
-//点赞
-Post.zanSubmit = function(name, minute, activityId, callback) {
-  //打开数据库
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
     }
-    db.authenticate(settings.user, settings.psw, function(err, authdb) {
-       if (err) {
-          return callback(err);
-       }
-        //读取 posts 集合
-        db.collection('posts', function (err, collection) {
-          if (err) {
-            mongodb.close();
-            return callback(err);
-          }
-          //根据用户名、发表日期及文章名进行查询
-          collection.findOne({
-            "activityId":activityId,
-            "topics.name": name,
-            "topics.time.minute": minute,
-            // "topics.title": title
-          }, function (err, doc) {
-            if (err) {
-              mongodb.close();
-              return callback(err);
-            }
-            if (doc) {
-              //点赞
-              collection.update({
-                "topics.name": name,
-                "topics.time.minute": minute,
-              }, 
-              {
-                $push: {"topics.$.zan": name}
-              }, 
-              function (err) {
-                mongodb.close();
-                if (err) {
-                  return callback(err);
-                }
-              });
-              //解析 markdown 为 html
-              doc.topics.forEach(function(topic){
-                  if (topic.name==name&&topic.time.minute==minute) {
-                      topic.post=markdown.toHTML(topic.post);
-                      topic.comments.forEach(function (comment) {
-                        comment.content = markdown.toHTML(comment.content);
-                      });
-                      topicItem=topic;
-                  }
-              });
-              callback(null, topicItem);//返回查询的一篇文章
-            }
-          });
-        });
-    });
   });
 };
 
-//更新一篇文章及其相关信息
-/*Post.update = function(name, day, post, callback) {
+//点赞 user_id 为被赞; user 为赞
+Post.zanSubmit = function(mix, minute, activityId, user, callback) {
+  console.log("zanSubmit_w_use_id==" + mix);
+  console.log("zanSubmit_w_minute==" + minute);
+  console.log("zanSubmit_w_user==" + user);
+  console.log("zanSubmit_w_activityId==" + activityId);
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
+      console.log("err="+err);
       return callback(err);
     }
     //读取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
+        console.log("err="+err);
         mongodb.close();
         return callback(err);
       }
-      //更新文章内容
+      //根据mix、发表日期进行update
+      console.log("zanSubmit_mix===" + mix);
+      console.log("zanSubmit_minute==" + minute);
+      //点赞
       collection.update({
-        "name": name,
-        "time.day": day,
-        // "title": title
-      }, {
-        $set: {post: post}
-      }, function (err) {
+        "activityId":activityId,
+        "time.minute": minute,
+        "mix": mix,
+      }, 
+      {
+        $addToSet: {"zan": user}
+      }, 
+      function (err) {
         mongodb.close();
         if (err) {
+          console.log("err="+err);
           return callback(err);
         }
-        callback(null);
       });
+      callback(null);//返回查询的一篇文章
     });
   });
-};*/
+};
 
-//删除一篇文章
-/*Post.remove = function(name, day, callback) {
+//取消点赞
+Post.zanCancel = function(_mix, _minute, _activityId, _user_id, callback) {
+  mongodb.open(function(err, db) {
+    if(err) {
+      mongodb.close();
+      console.log("zan_cancel_open_err=" + err);
+      return callback(err);
+    }else {
+      console.log("quxiaodianzan1");
+      db.collection("posts",function(err, collection) {
+          if(err) {
+            mongodb.close();
+            console.log("zan_cancel_collection_err=" + err);
+            return callback(err);
+          }else {
+            console.log("quxiaodianzan2");
+            collection.update({
+              "activityId": _activityId,
+              "mix": _mix,
+              "time.minute": _minute
+            },{
+              $pull:{"zan" : _user_id}
+            },function(err) {
+                if(err) {
+                    mongodb.close();
+                    console.log("zan_cancel_pull_err=" + err);
+                    return callback(err);
+                }
+            });
+            console.log("quxiaodianzan3");
+            callback(null);
+          }
+      });
+    }
+  });
+};
+
+//得到用户信息
+Post.getUserDetail = function (user_id, callback) {
+  console.log("detail")
   //打开数据库
   mongodb.open(function (err, db) {
-    if (err) {
+    if(err) {
+      console.log("err_getuserdetail_open="+err);
+      mongodb.close();
       return callback(err);
-    }
-    //读取 posts 集合
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //查询要删除的文档
-      collection.findOne({
-        "name": name,
-        "time.day": day,
-        // "title": title
-      }, function (err, doc) {
-        if (err) {
+    }else {
+      console.log("success_read_user_start==");
+      //读取user表
+      db.collection('user', function (err, collection){
+        if(err) {
+          console.log("err_getuserdetail_collection="+err);
           mongodb.close();
           return callback(err);
-        }
-        //如果有 reprint_from，即该文章是转载来的，先保存下来 reprint_from
-        var reprint_from = "";
-        if (doc.reprint_info.reprint_from) {
-          reprint_from = doc.reprint_info.reprint_from;
-        }
-        if (reprint_from != "") {
-          //更新原文章所在文档的 reprint_to
-          collection.update({
-            "name": reprint_from.name,
-            "time.day": reprint_from.day,
-            // "title": reprint_from.title
-          }, {
-            $pull: {
-              "reprint_info.reprint_to": {
-                "name": name,
-                "day": day,
-                // "title": title
-            }}
-          }, function (err) {
-            if (err) {
+        }else {
+          collection.findOne({
+            "user_id":user_id
+          },{
+            "user_name":1,
+            "headimgurl":1,
+            "user_id":1
+          }, function(err, doc){
+            if(err) {
               mongodb.close();
+              console.log("err_getuserdetail_find="+err);
               return callback(err);
+            }else {
+              console.log("success_read_user_doc=="+doc);
+              if(doc) {
+                console.log("success_read_user");
+                callback(null, doc);
+              }
             }
           });
         }
-
-        //删除转载来的文章所在的文档
-        collection.remove({
-          "name": name,
-          "time.day": day,
-          // "title": title
-        }, {
-          w: 1
-        }, function (err) {
-          mongodb.close();
-          if (err) {
-            return callback(err);
-          }
-          callback(null);
-        });
       });
-    });
-  });
-};*/
-
-//返回所有文章存档信息
-/*Post.getArchive = function(callback) {
-  //打开数据库
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
     }
-    //读取 posts 集合
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //返回只包含 name、time、title 属性的文档组成的存档数组
-      collection.find({}, {
-        "name": 1,
-        "time": 1,
-        // "title": 1
-      }).sort({
-        time: -1
-      }).toArray(function (err, docs) {
-        mongodb.close();
-        if (err) {
-          return callback(err);
-        }
-        callback(null, docs);
-      });
-    });
-  });
-};*/
-
-//返回原始发表的内容（markdown 格式）
-/*Post.edit = function(name, day, callback) {
-  //打开数据库
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    //读取 posts 集合
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //根据用户名、发表日期及文章名进行查询
-      collection.findOne({
-        "name": name,
-        "time.day": day,
-        // "title": title
-      }, function (err, doc) {
-        mongodb.close();
-        if (err) {
-          return callback(err);
-        }
-        callback(null, doc);//返回查询的一篇文章（markdown 格式）
-      });
-    });
-  });
-};*/
-
-//返回所有标签
-/*Post.getTags = function(callback) {
-  //打开数据库
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    //读取 posts 集合
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //distinct 用来找出给定键的所有不同值
-      collection.distinct("tags", function (err, docs) {
-        mongodb.close();
-        if (err) {
-          return callback(err);
-        }
-        callback(null, docs);
-      });
-    });
-  });
-};*/
-
-//返回含有特定标签的所有文章
-/*Post.getTag = function(tag, callback) {
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //查询所有 tags 数组内包含 tag 的文档
-      //并返回只含有 name、time、title 组成的数组
-      collection.find({
-        "tags": tag
-      }, {
-        "name": 1,
-        "time": 1,
-        "title": 1
-      }).sort({
-        time: -1
-      }).toArray(function (err, docs) {
-        mongodb.close();
-        if (err) {
-          return callback(err);
-        }
-        callback(null, docs);
-      });
-    });
-  });
-};*/
-
-//返回通过标题关键字查询的所有文章信息
-Post.search = function(keyword, callback) {
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      var pattern = new RegExp(keyword, "i");
-      collection.find({
-        "title": pattern
-      }, {
-        "name": 1,
-        "time": 1,
-        "title": 1
-      }).sort({
-        time: -1
-      }).toArray(function (err, docs) {
-        mongodb.close();
-        if (err) {
-         return callback(err);
-        }
-        callback(null, docs);
-      });
-    });
   });
 };
 
-//转载一篇文章
-Post.reprint = function(reprint_from, reprint_to, callback) {
-  mongodb.open(function (err, db) {
-    if (err) {
-      return callback(err);
-    }
-    db.collection('posts', function (err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-      //找到被转载的文章的原文档
-      collection.findOne({
-        "name": reprint_from.name,
-        "time.day": reprint_from.day,
-        "title": reprint_from.title
-      }, function (err, doc) {
-        if (err) {
-          mongodb.close();
-          return callback(err);
-        }
-
-        var date = new Date();
-        var time = {
-            date: date,
-            year : date.getFullYear(),
-            month : date.getFullYear() + "-" + (date.getMonth() + 1),
-            day : date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
-            minute : date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + 
-            date.getHours() + ":" + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
-        }
-
-        delete doc._id;//注意要删掉原来的 _id
-
-        doc.name = reprint_to.name;
-        doc.head = reprint_to.head;
-        doc.time = time;
-        doc.title = (doc.title.search(/[转载]/) > -1) ? doc.title : "[转载]" + doc.title;
-        doc.comments = [];
-        doc.reprint_info = {"reprint_from": reprint_from};
-        doc.pv = 0;
-
-        //更新被转载的原文档的 reprint_info 内的 reprint_to
-        collection.update({
-          "name": reprint_from.name,
-          "time.day": reprint_from.day,
-          "title": reprint_from.title
-        }, {
-          $push: {
-            "reprint_info.reprint_to": {
-              "name": doc.name,
-              "day": time.day,
-              "title": doc.title
-          }}
-        }, function (err) {
-          if (err) {
+//修改activity表时间
+Post.changeTime = function(_activityId, _content, callback) {
+    mongodb.open(function(err, db){
+        if(err) {
+            console.log("changeTime_open_err ==" + err);
             mongodb.close();
             return callback(err);
-          }
-        });
-
-        //将转载生成的副本修改后存入数据库，并返回存储后的文档
-        collection.insert(doc, {
-          safe: true
-        }, function (err, post) {
-          mongodb.close();
-          if (err) {
-            return callback(err);
-          }
-          callback(err, post[0]);
-        });
-      });
+        }else {
+            db.collection("activity", function(err, collection){
+                if(err) {
+                  console.log("activity_changeTime_err==" + err);
+                  mongodb.close();
+                  return callback(err);
+                }else {
+                  var objid=new ObjectId(_activityId);
+                  collection.update({
+                    "_id": objid
+                  },{
+                    "$set":{"time":_content}
+                  },function(err){
+                     mongodb.close();
+                     if(err) {
+                        console.log("update_changeTime_err==" + err);
+                        return callback(err);
+                     }else {
+                        callback(null);
+                     }
+                  });
+                }
+            });
+        }
     });
-  });
-};
+}

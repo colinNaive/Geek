@@ -1,9 +1,10 @@
-<br />
+
+<div class="one_comment">
 <% post.comments.forEach(function (comment, index) { %>
-  <div style="padding-left:4em">
-    <span>
-      <span style="color:#00D1DA"><%= comment.name %></span>:
-      <span style="color:#666"><%- comment.content %></span>
-    </span>
-  </div>
+	<p class = "article_cmts">
+      <span class = "comment_author"><%= comment.name %>:</span>
+      <span class = "comment_content"><%- comment.content %></span>
+    </p>
 <% }) %>
+</div>
+</article>
