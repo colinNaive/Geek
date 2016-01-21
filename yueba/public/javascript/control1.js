@@ -33,13 +33,12 @@
 		for(var i=0;i<moreComments.length;i++){
 			//点赞功能相关代码
 			zanSubmits[i].index=i;
-			// zan_submit_click[i]=1;
 			zanSubmits[i].onclick = function() {
 				if(zanSubmits[this.index].getAttribute("clk") == 0) {
 					//点过赞再点击就取消
 					xmlHttp = GetXmlHttpObject();
 					var postStr = "minute="+this.getAttribute("data-minute")+"&mix=" + this.getAttribute("data-mix") + "&cancel=" + 1;
-					var url="http://127.0.0.1:3000";
+					var url="http://121.42.163.74:3000";
 					getLabelsPost(url,postStr);
 					//这里只要点赞就不能再点了,没有在response里进行
 					zanSubmits[this.index].setAttribute("clk",1);
@@ -56,10 +55,9 @@
 				//发送点赞的post请求
 				xmlHttp = GetXmlHttpObject();
 				var postStr = "minute="+this.getAttribute("data-minute")+"&mix=" + this.getAttribute("data-mix");
-				var url="http://127.0.0.1:3000";
+				var url="http://121.42.163.74:3000";
 				getLabelsPost(url,postStr);
 				//这里只要点赞就不能再点了,没有在response里进行
-				// zan_submit_click[this.index]=0;
 				zanSubmits[this.index].setAttribute("clk",0);
 				zanSubmits[this.index].src="/images/zan_after.png";
 				var count = parseInt(zanCounts[this.index].innerHTML);
@@ -159,7 +157,7 @@
 			loading.style.display = "block";
 			loading_text.style.display = "block";
 			xmlHttp = GetXmlHttpObject();
-			var url="http://127.0.0.1:3000?p="+page;
+			var url="http://121.42.163.74:3000?p="+page;
 			if (maxTime) {
 				url +=("&mt="+maxTime);
 			}
@@ -210,7 +208,7 @@
 			//发送修改activity表的time的post请求
 			xmlHttp = GetXmlHttpObject();
 			var postStr = "activityId="+activityId+"&content=" + time_input.value;
-			var url="http://127.0.0.1:3000";
+			var url="http://121.42.163.74:3000";
 			getLabelsPost(url,postStr);
 			mybg.style.display = "none";
 			myAlert.style.display = "none";

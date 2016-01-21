@@ -8,19 +8,35 @@
           <!-- 时间 -->
           <p class="time"><%= post.time.minute %></p> 
         </div>
-      </div>
+</div>
+<% if (user && (user.user_id == post.user_id)) { %>
+  <div class="rmv_post"><a href="/remove/<%= activityId %>/<%= post.mix %>/<%= post.time
+  .minute %>">删除</a></div>
+<% } %>
 <!-- 帖子内容 -->
 <div class="post article_post"><%- post.post %></div>
 <h2 class="right_border"></h2>
 <!-- 点赞和评论数 -->
 <div class="pic_active mtop">
+  <!-- 评论 -->
 	<div class="comment fr">
 		<img src="/images/comment.png">
 		<span><%= post.comments.length %></span>
 	</div>
+  <!-- 点赞 -->
 	<div class="praise fr">
-		<img src="/images/zan_before.png">
-		<span><%= post.zan.length %></span>
+    <%for(var i=0;i<post.zan.length;i++){%>
+        <%if(post.zan[i]==user.user_id) {%>
+            <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_after.png" clk="0">
+            <%break%>
+        <%}else if(i==post.zan.length-1){%>
+            <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_before.png" clk="1">
+      <%}%>
+    <%}%>
+    <%if(post.zan.length==0){%>
+        <img class="zanSubmit" data-mix='<%= post.mix %>' data-minute='<%= post.time.minute %>' src="/images/zan_before.png" clk="1">
+    <%}%>
+		<span class="zan_count"><%= post.zan.length %></span>
 	</div>
 </div>
 <h2 class="right_border"></h2>

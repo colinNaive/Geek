@@ -14,7 +14,6 @@ module.exports = Comment;
 Comment.prototype.save = function(callback) {
   var mix = this.mix,
       minute = this.minute,
-      // title = this.title,
       comment = this.comment,
       activityId = this.activityId;
   //打开数据库
@@ -36,7 +35,6 @@ Comment.prototype.save = function(callback) {
         "activityId":activityId,
         "mix": mix,
         "time.minute": minute,
-        // "topics.title": title
       }, {
         $push: {"comments": comment}
       } , function (err) {
@@ -50,4 +48,44 @@ Comment.prototype.save = function(callback) {
       });   
     });
   });
+};
+
+//删除评论
+Comment.rmvcmts = function(activityId, mix, minute, cmtmx, cmttm, callback) {
+  console.log("rmvcmts11activityId=" + activityId);
+  mongodb.open(function(err, db) {
+      if(err) {
+          mongodb.close();
+          console.log("rmvcmts_open_err ==" + err);
+          callback(err);
+      }else {
+          console.log("rmvcmts22");
+          db.collection("posts", function(err, collection) {
+              if(err) {
+                  mongodb.close();
+                  console.log("rmvcmts_collection_err=" + err);
+                  callback(err);
+              }else {
+                  console.log("rmvcmts33");
+                  collection.update({
+                    "activityId" :activityId,
+                    "mix" : mix,
+                    "time.minute": minute,
+                  },{
+                    $pull:{"comments":{"mix":cmtmx , "time":cmttm}}
+                  },function(err) {
+                    if(err) {
+                      mongodb.close();
+                      console.log("rmvcmts_update_err==" + err);
+                      callback(err);
+                    }else{
+                      console.log("rmvcmts44");
+                      callback(null);
+                    }
+                  });
+              }
+          });
+      }
+  });
+
 };

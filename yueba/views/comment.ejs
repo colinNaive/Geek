@@ -4,6 +4,11 @@
 	<p class = "article_cmts">
       <span class = "comment_author"><%= comment.name %>:</span>
       <span class = "comment_content"><%- comment.content %></span>
+      <% if(comment.user_id == user.user_id) { %>
+        <% console.log("comment.user_id==" + comment.user_id) %>
+        <% console.log("user.user_id==" + user.user_id) %>
+      	<a class="dltcmt" href="/rmvcmts/<%= activityId %>/<%= post.mix %>/<%= post.time.minute %>/<%= comment.mix %>/<%= comment.time %>">删除</a>
+  	  <% } %>
     </p>
 <% }) %>
 </div>

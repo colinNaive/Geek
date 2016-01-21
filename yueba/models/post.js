@@ -495,3 +495,32 @@ Post.changeTime = function(_activityId, _content, callback) {
         }
     });
 }
+
+//删帖
+Post.remove = function(activityId, mix, minute, callback) {
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      //删除转载来的文章所在的文档
+      collection.remove({
+        "activityId": activityId,
+        "mix": mix,
+        "time.minute": minute
+      }, {
+        w: 1
+      }, function (err) {
+        mongodb.close();
+        if (err) {
+          return callback(err);
+        }
+        callback(null);
+      });
+    });
+  });
+};

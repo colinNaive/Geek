@@ -118,9 +118,9 @@ module.exports = function(app) {
   /************************************控制代码是如何分块书写的？**********************************************/
   //从数据库拉取comments
   app.get('/u/:activityId/:mix/:minute/', function (req, res) {
+    console.log("jindaozheli1");
     var activityId=req.session.activity_id;
     var user = req.session.user;
-    console.log("get_comments_user_id=="+req.params.mix);
     Post.getOne(req.params.mix, req.params.minute, req.params.activityId, function (err, post) {
       if (err) {
         return res.redirect('back');
@@ -132,6 +132,38 @@ module.exports = function(app) {
       });
     });
   });
+
+  //删除帖子
+  app.get('/remove/:activityId/:mix/:minute', function (req, res) {
+    console.log("jindaozheli2");
+    var activityId=req.session.activity_id;
+    var user = req.session.user;
+    Post.remove(req.params.activityId, req.params.mix, req.params.minute, function (err) {
+      if (err) {
+        req.flash('error', err); 
+        return res.redirect('back');
+      }
+      req.flash('success', '删除成功!');
+      res.redirect('/');
+    });
+  });
+
+  //删除评论
+  app.get('/rmvcmts/:activityId/:mix/:minute/:cmtmx/:cmttm', function (req, res) {
+    console.log("jindaozheli21212");
+    var activityId=req.session.activity_id;
+    var user = req.session.user;
+    Comment.rmvcmts(req.params.activityId, req.params.mix, req.params.minute, req.params.cmtmx, req.params.cmttm, function (err) {
+      if (err) {
+        req.flash('error', err); 
+        return res.redirect('back');
+      }
+      console.log("jindaozheldsf");
+      req.flash('success', '删除成功!');
+      res.redirect('back');
+    });
+  });
+
 
   //提交新的comments
   app.post('/u/:activityId/:mix/:minute', function (req, res) {
